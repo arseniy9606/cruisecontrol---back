@@ -1,0 +1,9 @@
+{
+  "go.toolsEnvVars": {
+    "CGO_ENABLED": "0"
+  },
+  "go.useLanguageServer": true,
+  "terminal.integrated.env.osx": {
+    "PATH": "${workspaceFolder}/.tools/go/bin:${env:PATH}"
+  }
+}

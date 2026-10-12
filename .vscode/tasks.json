@@ -1,0 +1,1 @@
+{"version":"2.0.0","tasks":[{"label":"Автомобили: запустить ЛР-1","type":"shell","command":"./scripts/run-fuel_consumptions.sh","problemMatcher":[],"isBackground":true},{"label":"Автомобили: тесты","type":"shell","command":"./scripts/check-fuel_consumptions.sh","problemMatcher":[]}]}

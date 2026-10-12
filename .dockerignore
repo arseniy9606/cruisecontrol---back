@@ -1,0 +1,7 @@
+.git
+.tools
+.runtime
+bin
+docs
+media
+.DS_Store
