@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/arseniy9606/cruisecontrol---front/internal/api"
+	"github.com/arseniy9606/cruisecontrol---back/internal/api"
 	"log"
 )
 

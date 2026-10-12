@@ -3,7 +3,7 @@ package fuel_consumptions_handler
 import (
 	"crypto/rand"
 	"encoding/binary"
-	"github.com/arseniy9606/cruisecontrol---front/internal/app/fuel_consumptions"
+	"github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions"
 	"github.com/gin-gonic/gin"
 	"math"
 	"net/http"

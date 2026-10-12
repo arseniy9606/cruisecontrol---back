@@ -1,4 +1,4 @@
-module github.com/arseniy9606/cruisecontrol---front
+module github.com/arseniy9606/cruisecontrol---back
 
 go 1.24.0
 

@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
-	"github.com/arseniy9606/cruisecontrol---front/internal/app/fuel_consumptions"
-	"github.com/arseniy9606/cruisecontrol---front/internal/app/fuel_consumptions_handler"
+	"github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions"
+	"github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
