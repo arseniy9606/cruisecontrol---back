@@ -21,6 +21,7 @@ services:
       - fuel_consumptions-media:/data
     command: server /data --console-address ":9001"
   fuel_consumptions-media-init:
+    profiles: ["media"]
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
