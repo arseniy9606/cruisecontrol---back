@@ -1,9 +1,6 @@
 package fuel_consumptions
 
-import (
-	"strings"
-	"sync"
-)
+import "time"
 
 type FuelConsumptionStatus string
 
@@ -13,62 +10,39 @@ const (
 	FuelConsumptionDeleted   FuelConsumptionStatus = "удален"
 )
 
-// FuelConsumption — запись расхода топлива автомобиля и объёма его бака.
-// Два предметных поля: FuelTankVolume и FuelConsumptionRate.
-// Единственная вложенная коллекция — ID пользователей, поставивших лайк.
+// The three models map to subject-specific PostgreSQL tables; no in-memory database.
+type FuelConsumptionDriver struct {
+	FuelConsumptionDriverID        int64     `gorm:"column:fuel_consumption_driver_id;primaryKey"`
+	FuelConsumptionDriverLogin     string    `gorm:"column:fuel_consumption_driver_login;type:varchar(60);not null;unique"`
+	FuelConsumptionDriverName      string    `gorm:"column:fuel_consumption_driver_name;type:varchar(120);not null"`
+	FuelConsumptionDriverCreatedAt time.Time `gorm:"column:fuel_consumption_driver_created_at;autoCreateTime"`
+}
+
+func (FuelConsumptionDriver) TableName() string { return "fuel_consumption_drivers" }
+
 type FuelConsumption struct {
-	FuelConsumptionID          int
-	FuelConsumptionName        string
-	FuelConsumptionDescription string
-	FuelConsumptionStatus      FuelConsumptionStatus
-	FuelConsumptionImageKey    string
-	FuelConsumptionVideoKey    string
-	FuelTankVolume             float64
-	FuelConsumptionRate        float64
-	FuelConsumptionLikedBy     []int
+	FuelConsumptionID          int64                 `gorm:"column:fuel_consumption_id;primaryKey"`
+	FuelConsumptionName        string                `gorm:"column:fuel_consumption_name;type:varchar(120);not null"`
+	FuelConsumptionDescription string                `gorm:"column:fuel_consumption_description;type:varchar(1000);not null"`
+	FuelConsumptionStatus      FuelConsumptionStatus `gorm:"column:fuel_consumption_status;type:varchar(20);not null"`
+	FuelConsumptionImageURL    string                `gorm:"column:fuel_consumption_image_url;type:varchar(500);not null"`
+	FuelConsumptionVideoURL    string                `gorm:"column:fuel_consumption_video_url;type:varchar(500);not null"`
+	FuelTankVolume             float64               `gorm:"column:fuel_tank_volume;type:numeric(7,1);not null"`
+	FuelConsumptionRate        float64               `gorm:"column:fuel_consumption_rate;type:numeric(4,1);not null"`
+	FuelConsumptionCreatedAt   time.Time             `gorm:"column:fuel_consumption_created_at;autoCreateTime"`
+	FuelConsumptionCreatorID   int64                 `gorm:"column:fuel_consumption_creator_id;not null"`
+	FuelConsumptionFormedAt    *time.Time            `gorm:"column:fuel_consumption_formed_at"`
 }
 
-type FuelConsumptionRepository struct {
-	mu                         sync.RWMutex
-	likesFile                  string
-	fuel_consumptions          []FuelConsumption
-	fuel_consumptionsMediaBase string
+func (FuelConsumption) TableName() string { return "fuel_consumptions" }
+
+type FuelConsumptionLike struct {
+	FuelConsumptionLikeID   int64 `gorm:"column:fuel_consumption_like_id;primaryKey"`
+	FuelConsumptionID       int64 `gorm:"column:fuel_consumption_id;not null"`
+	FuelConsumptionDriverID int64 `gorm:"column:fuel_consumption_driver_id;not null"`
 }
 
-func NewFuelConsumptionRepository(mediaBase string) *FuelConsumptionRepository {
-	return &FuelConsumptionRepository{fuel_consumptionsMediaBase: strings.TrimRight(mediaBase, "/"), fuel_consumptions: []FuelConsumption{
-		{1, "Седан", "Комфортный седан для городской и загородной дороги. Учебный пример расхода и объёма бака; фактические значения зависят от модели, комплектации и условий движения.", FuelConsumptionPublished, "fuel_consumptions_sedan.jpg", "fuel_consumptions_sedan.mp4", 70, 6.7, []int{11, 12, 13, 14, 15, 16}},
-		{2, "Внедорожник", "Внедорожник для дороги и пересечённой местности. Учебный пример Toyota Land Cruiser 2.8 D-4D: 10,7 л/100 км в смешанном цикле WLTP и бак 80 л. Видео иллюстрирует тип кузова, а не конкретную комплектацию.", FuelConsumptionPublished, "fuel_consumptions_suv.jpg", "fuel_consumptions_suv.mp4", 80, 10.7, []int{11, 17, 18}},
-		{3, "Микроавтобус", "Пассажирский микроавтобус для групповых поездок. Вместительный салон и увеличенный бак. Расход и объём бака — учебные значения, а не паспортные данные машины на видео.", FuelConsumptionPublished, "fuel_consumptions_minibus.jpg", "fuel_consumptions_minibus.mp4", 80, 6.6, []int{12, 13, 17, 19}},
-		{4, "Фура", "Седельный тягач с полуприцепом для перевозки грузов. Учебные значения расхода и объёма бака. Расход существенно зависит от массы груза, маршрута и скорости.", FuelConsumptionPublished, "fuel_consumptions_truck.jpg", "fuel_consumptions_truck.mp4", 480, 28.8, []int{11, 20}},
-		{5, "Внедорожник · черновик", "Черновик карточки автомобиля. Заполните название, описание, расход топлива и объём бака. В первой лабораторной введённые данные не сохраняются.", FuelConsumptionDraft, "fuel_consumptions_suv.jpg", "fuel_consumptions_suv.mp4", 80, 10.7, []int{}},
-		{6, "Архивный седан", "Удалённая карточка не доступна в ленте и плитке.", FuelConsumptionDeleted, "fuel_consumptions_sedan.jpg", "fuel_consumptions_sedan.mp4", 70, 6.7, []int{11}},
-	}}
-}
+func (FuelConsumptionLike) TableName() string { return "fuel_consumption_likes" }
 
-func (r *FuelConsumptionRepository) PublishedFuelConsumptions() []FuelConsumption {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	result := make([]FuelConsumption, 0)
-	for _, car := range r.fuel_consumptions {
-		if car.FuelConsumptionStatus == FuelConsumptionPublished {
-			car.FuelConsumptionLikedBy = append([]int(nil), car.FuelConsumptionLikedBy...)
-			result = append(result, car)
-		}
-	}
-	return result
-}
-func (r *FuelConsumptionRepository) DraftFuelConsumption() (FuelConsumption, bool) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	for _, car := range r.fuel_consumptions {
-		if car.FuelConsumptionStatus == FuelConsumptionDraft {
-			car.FuelConsumptionLikedBy = append([]int(nil), car.FuelConsumptionLikedBy...)
-			return car, true
-		}
-	}
-	return FuelConsumption{}, false
-}
-func (r *FuelConsumptionRepository) FuelConsumptionMediaURL(key string) string {
-	return r.fuel_consumptionsMediaBase + "/" + key
-}
+// Lab 2 has no authentication: all controllers use the demonstration driver.
+const FuelConsumptionCurrentDriverID int64 = 1

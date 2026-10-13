@@ -20,3 +20,6 @@
 
 /* Preserve the full original frame: no stretch, squash, zoom or cropping. */
 .fuel_consumptions-upload>video{height:auto;max-height:220px;background:#21201f}
+
+/* Lab 2: real submission and logical deletion. */
+.fuel_consumptions-tile-link{display:block}.fuel_consumptions-delete-form{padding:0 10px 12px;margin:0}.fuel_consumptions-delete-form button{width:100%;border:1px solid #dedbd6;background:#fff;color:#96251f;padding:9px 4px;border-radius:10px;font-size:11px;cursor:pointer}.fuel_consumptions-delete-form button:hover{background:#fff2f0}.fuel_consumptions-draft-submit{margin-top:24px}.fuel_consumptions-draft-fields input[readonly]{color:#73716d}

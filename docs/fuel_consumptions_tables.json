@@ -1,0 +1,293 @@
+[
+  {
+    "_type": "ERDEntity",
+    "_id": "8f5192dc45f14c3bba83a73a0e094d53",
+    "_parent": {
+      "$ref": "069e9324ddfe40b0a17263e24390ceae"
+    },
+    "name": "fuel_consumption_drivers",
+    "columns": [
+      {
+        "_type": "ERDColumn",
+        "_id": "c6d19b8e6b5c4f818061048a33d2ca57",
+        "_parent": {
+          "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+        },
+        "name": "fuel_consumption_driver_id",
+        "type": "BIGINT",
+        "length": "",
+        "primaryKey": true,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "914da6d2926d4b10866c61daf7777890",
+        "_parent": {
+          "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+        },
+        "name": "fuel_consumption_driver_login",
+        "type": "VARCHAR",
+        "length": "60",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "ad1aa4c2eb1b4d1ab06f0e751ffd8104",
+        "_parent": {
+          "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+        },
+        "name": "fuel_consumption_driver_name",
+        "type": "VARCHAR",
+        "length": "120",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "84d0a6d4a4294713a2a4b0b6ac051937",
+        "_parent": {
+          "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+        },
+        "name": "fuel_consumption_driver_created_at",
+        "type": "TIMESTAMPTZ",
+        "length": "",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      }
+    ]
+  },
+  {
+    "_type": "ERDEntity",
+    "_id": "f60f8b3673514a7dad5e66e9859e2947",
+    "_parent": {
+      "$ref": "069e9324ddfe40b0a17263e24390ceae"
+    },
+    "name": "fuel_consumptions",
+    "columns": [
+      {
+        "_type": "ERDColumn",
+        "_id": "b42250a23f8b4361aa6ea60388a2811f",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_id",
+        "type": "BIGINT",
+        "length": "",
+        "primaryKey": true,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "26fee8607fa7491b931eb1698cb3f06a",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_name",
+        "type": "VARCHAR",
+        "length": "120",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "246f3900320e4bdb93f2611a43466383",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_description",
+        "type": "VARCHAR",
+        "length": "1000",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "fd5331773db34d7aa0ea05d66f8b28ed",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_status",
+        "type": "VARCHAR",
+        "length": "20",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "47f1cbc2b5534ae2b88b10dfe0f61593",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_image_url",
+        "type": "VARCHAR",
+        "length": "500",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "6e360c5dc0bd42ce903be3a5cb4bf4d0",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_video_url",
+        "type": "VARCHAR",
+        "length": "500",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "95d09c5ca9e148309df7444718cc1a1f",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_tank_volume",
+        "type": "NUMERIC",
+        "length": "7,1",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "d536caabf845487a922353d8d33fa7ea",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_rate",
+        "type": "NUMERIC",
+        "length": "4,1",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "473be6744baa43fb8a3e41f3530b14cf",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_created_at",
+        "type": "TIMESTAMPTZ",
+        "length": "",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "4fc6b49b22aa4482a11079f37aba6f12",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_creator_id",
+        "type": "BIGINT",
+        "length": "",
+        "primaryKey": false,
+        "foreignKey": true,
+        "nullable": false,
+        "unique": false,
+        "referenceTo": {
+          "$ref": "c6d19b8e6b5c4f818061048a33d2ca57"
+        }
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "c8579b3da38c4475b63a9969f442cc70",
+        "_parent": {
+          "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+        },
+        "name": "fuel_consumption_formed_at",
+        "type": "TIMESTAMPTZ",
+        "length": "",
+        "primaryKey": false,
+        "foreignKey": false,
+        "nullable": true,
+        "unique": false
+      }
+    ]
+  },
+  {
+    "_type": "ERDEntity",
+    "_id": "77ab2bdf7c59471487b9cfa9e10e1168",
+    "_parent": {
+      "$ref": "069e9324ddfe40b0a17263e24390ceae"
+    },
+    "name": "fuel_consumption_likes",
+    "columns": [
+      {
+        "_type": "ERDColumn",
+        "_id": "872819b964f145f0b0cac260743fad31",
+        "_parent": {
+          "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+        },
+        "name": "fuel_consumption_like_id",
+        "type": "BIGINT",
+        "length": "",
+        "primaryKey": true,
+        "foreignKey": false,
+        "nullable": false,
+        "unique": false
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "a7a065a3b2a94204bb6c7b233e58af6b",
+        "_parent": {
+          "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+        },
+        "name": "fuel_consumption_id",
+        "type": "BIGINT",
+        "length": "",
+        "primaryKey": false,
+        "foreignKey": true,
+        "nullable": false,
+        "unique": false,
+        "referenceTo": {
+          "$ref": "b42250a23f8b4361aa6ea60388a2811f"
+        }
+      },
+      {
+        "_type": "ERDColumn",
+        "_id": "84ad33bd8165481b8dd47bd490eeece8",
+        "_parent": {
+          "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+        },
+        "name": "fuel_consumption_driver_id",
+        "type": "BIGINT",
+        "length": "",
+        "primaryKey": false,
+        "foreignKey": true,
+        "nullable": false,
+        "unique": false,
+        "referenceTo": {
+          "$ref": "c6d19b8e6b5c4f818061048a33d2ca57"
+        }
+      }
+    ]
+  }
+]

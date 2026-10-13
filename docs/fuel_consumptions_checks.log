@@ -1,0 +1,326 @@
+ Container fuel_consumptions-lab2-fuel_consumptions-postgres-1 Running
+ Image fuel_consumptions-lab2-fuel_consumptions-checks Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 838B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from fuel_consumptions.Dockerfile
+#2 transferring dockerfile: 726B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/golang:1.24.2-bookworm
+#3 ...
+
+#4 [auth] library/golang:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/golang:1.24.2-bookworm
+#3 DONE 1.8s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 86B done
+#5 DONE 0.0s
+
+#6 [build  1/10] FROM docker.io/library/golang:1.24.2-bookworm@sha256:79390b5e5af9ee6e7b1173ee3eac7fadf6751a545297672916b59bfa0ecf6f71
+#6 resolve docker.io/library/golang:1.24.2-bookworm@sha256:79390b5e5af9ee6e7b1173ee3eac7fadf6751a545297672916b59bfa0ecf6f71 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 1.70kB done
+#7 DONE 0.0s
+
+#8 [build  3/10] COPY go.mod go.sum ./
+#8 CACHED
+
+#9 [build  4/10] RUN go mod download
+#9 CACHED
+
+#10 [build  5/10] COPY cmd ./cmd
+#10 CACHED
+
+#11 [build  6/10] COPY internal ./internal
+#11 CACHED
+
+#12 [build  2/10] WORKDIR /src
+#12 CACHED
+
+#13 [build  7/10] COPY migrations ./migrations
+#13 CACHED
+
+#14 [build  8/10] COPY templates ./templates
+#14 DONE 0.0s
+
+#15 [build  9/10] COPY resources ./resources
+#15 DONE 0.0s
+
+#16 [build 10/10] RUN CGO_ENABLED=0 go build -trimpath -o /out/fuel_consumptions ./cmd/fuel_consumptions &&     CGO_ENABLED=0 go build -trimpath -o /out/fuel_consumptions-migrate ./cmd/migrate
+#16 DONE 8.5s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 4.0s done
+#17 exporting manifest sha256:8daaaa11532b8d2feb9373f7131e30e19cf0f719d02cfaf795b263efafbbba42 done
+#17 exporting config sha256:68802d6638ce26a9bc913fa6bfb2194fa6b160a0bc2ef0df6c2ecd46d1409bb2 done
+#17 exporting attestation manifest sha256:a2fce1ee2887791ec1601e5f94b59a9b5e870f920119661490031eed65da30bb done
+#17 exporting manifest list sha256:a53995a7601ad904929cf6f3c19b291f7ffdbfdba8b149510f8ef83700fda32d done
+#17 naming to docker.io/library/fuel_consumptions-lab2-fuel_consumptions-checks:latest done
+#17 unpacking to docker.io/library/fuel_consumptions-lab2-fuel_consumptions-checks:latest
+#17 unpacking to docker.io/library/fuel_consumptions-lab2-fuel_consumptions-checks:latest 4.8s done
+#17 DONE 8.8s
+
+#18 resolving provenance for metadata file
+#18 DONE 0.0s
+ Image fuel_consumptions-lab2-fuel_consumptions-checks Built
+ Container fuel_consumptions-lab2-fuel_consumptions-postgres-1 Waiting
+ Container fuel_consumptions-lab2-fuel_consumptions-postgres-1 Healthy
+ Container fuel_consumptions-lab2-fuel_consumptions-checks-run-98e2d0eb4e82 Creating
+ Container fuel_consumptions-lab2-fuel_consumptions-checks-run-98e2d0eb4e82 Created
+?   	github.com/arseniy9606/cruisecontrol---back/cmd/fuel_consumptions	[no test files]
+?   	github.com/arseniy9606/cruisecontrol---back/cmd/migrate	[no test files]
+=== RUN   TestFuelConsumptionLab2PostgreSQL
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:33
+[0m[33m[2.763ms] [34;1m[rows:0][0m CREATE SCHEMA fuel_consumptions_test_1791889143754084667
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (4):
+	-
+	- fuel_consumptions_draft.html
+	- fuel_consumptions_feed.html
+	- fuel_consumptions_tiles.html
+
+[GIN-debug] GET    /fuel_consumptions-assets/*filepath --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /fuel_consumptions-assets/*filepath --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /fuel_consumptions        --> github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler.(*FuelConsumptionHandler).GetFuelConsumptionTiles-fm (4 handlers)
+[GIN-debug] GET    /fuel_consumptions/draft  --> github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler.(*FuelConsumptionHandler).GetFuelConsumptionDraft-fm (4 handlers)
+[GIN-debug] GET    /fuel_consumptions/feed/*fuel_consumptionsID --> github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler.(*FuelConsumptionHandler).GetFuelConsumptionFeed-fm (4 handlers)
+[GIN-debug] POST   /fuel_consumptions/create --> github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler.(*FuelConsumptionHandler).PostFuelConsumptionCreate-fm (4 handlers)
+[GIN-debug] POST   /fuel_consumptions/publish --> github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler.(*FuelConsumptionHandler).PostFuelConsumptionPublish-fm (4 handlers)
+[GIN-debug] POST   /fuel_consumptions/:fuel_consumptionsDeleteID/delete --> github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler.(*FuelConsumptionHandler).PostFuelConsumptionDelete-fm (4 handlers)
+=== RUN   TestFuelConsumptionLab2PostgreSQL/three_GET_pages_and_readonly_likes
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:42
+[0m[33m[0.317ms] [34;1m[rows:5][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_rate BETWEEN 0 AND 60 ORDER BY fuel_consumption_id
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.152ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.085ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 2
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.081ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 3
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.066ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 4
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.052ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 7
+[GIN] 2026/10/13 - 10:59:03 | 200 |      2.0475ms |       192.0.2.1 | GET      "/fuel_consumptions"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60
+[0m[33m[0.195ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 1 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.070ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 1
+[GIN] 2026/10/13 - 10:59:03 | 200 |     525.625µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/1"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:68
+[0m[33m[0.151ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.067ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 5
+[GIN] 2026/10/13 - 10:59:03 | 200 |     456.375µs |       192.0.2.1 | GET      "/fuel_consumptions/draft"
+[GIN] 2026/10/13 - 10:59:03 | 404 |       1.917µs |       192.0.2.1 | POST     "/fuel_consumptions/1/like"
+=== RUN   TestFuelConsumptionLab2PostgreSQL/SQL_filter_and_single_feed_card
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:42
+[0m[33m[0.094ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_rate BETWEEN 10 AND 11 ORDER BY fuel_consumption_id
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.061ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 2
+[GIN] 2026/10/13 - 10:59:03 | 200 |     443.541µs |       192.0.2.1 | GET      "/fuel_consumptions?fuel_consumptions_fuel_min=10&fuel_consumptions_fuel_max=11"
+[GIN] 2026/10/13 - 10:59:03 | 400 |     119.625µs |       192.0.2.1 | GET      "/fuel_consumptions?fuel_consumptions_fuel_min=NaN"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60 [35;1mrecord not found
+[0m[33m[0.079ms] [34;1m[rows:0][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 6 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+[GIN] 2026/10/13 - 10:59:03 | 404 |         200µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/6"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:55 [35;1mrecord not found
+[0m[33m[0.141ms] [34;1m[rows:0][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_id = 6 AND fuel_consumption_status = 'опубликован' ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+[GIN] 2026/10/13 - 10:59:03 | 404 |     285.875µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/6?next=true"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60 [35;1mrecord not found
+[0m[33m[0.068ms] [34;1m[rows:0][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 5 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+[GIN] 2026/10/13 - 10:59:03 | 404 |     173.459µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/5"
+[GIN] 2026/10/13 - 10:59:03 | 404 |      86.833µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/invalid"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:55
+[0m[33m[0.063ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_id = 1 AND fuel_consumption_status = 'опубликован' ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60
+[0m[33m[0.154ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id > 1 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.057ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 2
+[GIN] 2026/10/13 - 10:59:03 | 200 |     534.084µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/1?next=true"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:55
+[0m[33m[0.083ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_id = 7 AND fuel_consumption_status = 'опубликован' ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60 [35;1mrecord not found
+[0m[33m[0.070ms] [34;1m[rows:0][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id > 7 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:62
+[0m[33m[0.132ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.045ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 1
+[GIN] 2026/10/13 - 10:59:03 | 200 |     704.167µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/7?next=true"
+=== RUN   TestFuelConsumptionLab2PostgreSQL/live_database_changes
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:139
+[0m[33m[0.596ms] [34;1m[rows:1][0m UPDATE "fuel_consumptions" SET "fuel_consumption_rate"=8.4 WHERE fuel_consumption_id = 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60
+[0m[33m[0.086ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 1 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.054ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 1
+[GIN] 2026/10/13 - 10:59:03 | 200 |     367.208µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/1"
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:148
+[0m[33m[0.325ms] [34;1m[rows:1][0m INSERT INTO "fuel_consumption_likes" ("fuel_consumption_id","fuel_consumption_driver_id") VALUES (1,1) RETURNING "fuel_consumption_like_id"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.058ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 1
+
+2026/10/13 10:59:03 [31;1m/src/internal/api/fuel_consumptions_integration_test.go:155 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumption_likes_unique" (SQLSTATE 23505)
+[0m[33m[0.251ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumption_likes" ("fuel_consumption_id","fuel_consumption_driver_id") VALUES (1,1) RETURNING "fuel_consumption_like_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/api/fuel_consumptions_integration_test.go:158 [35;1mERROR: update or delete on table "fuel_consumption_drivers" violates foreign key constraint "fuel_consumptions_creator_fk" on table "fuel_consumptions" (SQLSTATE 23503)
+[0m[33m[0.366ms] [34;1m[rows:0][0m DELETE FROM "fuel_consumption_drivers" WHERE "fuel_consumption_drivers"."fuel_consumption_driver_id" = 1
+=== RUN   TestFuelConsumptionLab2PostgreSQL/fallbacks_are_in_HTML
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60
+[0m[33m[0.079ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 7 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.048ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 7
+[GIN] 2026/10/13 - 10:59:03 | 200 |     379.083µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/7"
+=== RUN   TestFuelConsumptionLab2PostgreSQL/create_publish_delete_and_constraints
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[0.308ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('duplicate','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.779',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:68
+[0m[33m[0.134ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.052ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 5
+[GIN] 2026/10/13 - 10:59:03 | 409 |     715.875µs |       192.0.2.1 | POST     "/fuel_consumptions/create"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:68
+[0m[33m[0.087ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.049ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 5
+[GIN] 2026/10/13 - 10:59:03 | 400 |      363.75µs |       192.0.2.1 | POST     "/fuel_consumptions/publish"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:86
+[0m[33m[0.401ms] [34;1m[rows:1][0m UPDATE "fuel_consumptions" SET "fuel_consumption_description"='Опубликованная карточка',"fuel_consumption_formed_at"='2026-10-13 10:59:03.78',"fuel_consumption_rate"=10.7,"fuel_consumption_status"='опубликован',"fuel_tank_volume"=80 WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1
+[GIN] 2026/10/13 - 10:59:03 | 303 |     422.375µs |       192.0.2.1 | POST     "/fuel_consumptions/publish"
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:180
+[0m[33m[0.141ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE "fuel_consumptions"."fuel_consumption_id" = 5 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:184
+[0m[33m[0.120ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumptions"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:68 [35;1mrecord not found
+[0m[33m[0.074ms] [34;1m[rows:0][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.055ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 0
+[GIN] 2026/10/13 - 10:59:03 | 200 |     260.083µs |       192.0.2.1 | GET      "/fuel_consumptions/draft"
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:186
+[0m[33m[0.044ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumptions"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78
+[0m[33m[0.354ms] [34;1m[rows:1][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Новый автомобиль','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.781',1,NULL) RETURNING "fuel_consumption_id"
+[GIN] 2026/10/13 - 10:59:03 | 303 |     373.708µs |       192.0.2.1 | POST     "/fuel_consumptions/create"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:68
+[0m[33m[0.082ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:86
+[0m[33m[0.285ms] [34;1m[rows:1][0m UPDATE "fuel_consumptions" SET "fuel_consumption_description"='Новый автомобиль из PostgreSQL',"fuel_consumption_formed_at"='2026-10-13 10:59:03.781',"fuel_consumption_rate"=6.7,"fuel_consumption_status"='опубликован',"fuel_tank_volume"=70 WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1
+[GIN] 2026/10/13 - 10:59:03 | 303 |       302.5µs |       192.0.2.1 | POST     "/fuel_consumptions/publish"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60
+[0m[33m[0.067ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 9 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:73
+[0m[33m[0.048ms] [34;1m[rows:1][0m SELECT count(*) FROM "fuel_consumption_likes" WHERE fuel_consumption_id = 9
+[GIN] 2026/10/13 - 10:59:03 | 200 |     312.959µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/9"
+[GIN] 2026/10/13 - 10:59:03 | 303 |     267.833µs |       192.0.2.1 | POST     "/fuel_consumptions/9/delete"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:60 [35;1mrecord not found
+[0m[33m[0.051ms] [34;1m[rows:0][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'опубликован' AND fuel_consumption_id = 9 ORDER BY fuel_consumption_id,"fuel_consumptions"."fuel_consumption_id" LIMIT 1
+[GIN] 2026/10/13 - 10:59:03 | 404 |     236.083µs |       192.0.2.1 | GET      "/fuel_consumptions/feed/9"
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:203
+[0m[33m[0.123ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE "fuel_consumptions"."fuel_consumption_id" = 9 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+[GIN] 2026/10/13 - 10:59:03 | 404 |     173.542µs |       192.0.2.1 | POST     "/fuel_consumptions/999999/delete"
+=== RUN   TestFuelConsumptionLab2PostgreSQL/concurrent_draft_creation_is_unique
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78
+[0m[33m[0.782ms] [34;1m[rows:1][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[3.322ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[3.557ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[3.824ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[4.126ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[4.421ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[4.520ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [31;1m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:78 [35;1mERROR: duplicate key value violates unique constraint "fuel_consumptions_one_draft_per_driver" (SQLSTATE 23505)
+[0m[33m[4.528ms] [34;1m[rows:0][0m INSERT INTO "fuel_consumptions" ("fuel_consumption_name","fuel_consumption_description","fuel_consumption_status","fuel_consumption_image_url","fuel_consumption_video_url","fuel_tank_volume","fuel_consumption_rate","fuel_consumption_created_at","fuel_consumption_creator_id","fuel_consumption_formed_at") VALUES ('Concurrent car','','черновик','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.jpg','http://localhost:9100/fuel-consumptions/fuel_consumptions_missing.mp4',0,0,'2026-10-13 10:59:03.783',1,NULL) RETURNING "fuel_consumption_id"
+
+2026/10/13 10:59:03 [32m/src/internal/app/fuel_consumptions/fuel_consumptions_repository.go:68
+[0m[33m[0.528ms] [34;1m[rows:1][0m SELECT * FROM "fuel_consumptions" WHERE fuel_consumption_status = 'черновик' AND fuel_consumption_creator_id = 1 ORDER BY "fuel_consumptions"."fuel_consumption_id" LIMIT 1
+=== RUN   TestFuelConsumptionLab2PostgreSQL/reject_files_and_cross_origin
+[GIN] 2026/10/13 - 10:59:03 | 415 |       1.167µs |       192.0.2.1 | POST     "/fuel_consumptions/create"
+[GIN] 2026/10/13 - 10:59:03 | 403 |         750ns |       192.0.2.1 | POST     "/fuel_consumptions/1/delete"
+
+2026/10/13 10:59:03 [32m/src/internal/api/fuel_consumptions_integration_test.go:246
+[0m[33m[2.602ms] [34;1m[rows:0][0m DROP SCHEMA fuel_consumptions_test_1791889143754084667 CASCADE
+--- PASS: TestFuelConsumptionLab2PostgreSQL (0.04s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/three_GET_pages_and_readonly_likes (0.00s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/SQL_filter_and_single_feed_card (0.00s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/live_database_changes (0.00s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/fallbacks_are_in_HTML (0.00s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/create_publish_delete_and_constraints (0.00s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/concurrent_draft_creation_is_unique (0.01s)
+    --- PASS: TestFuelConsumptionLab2PostgreSQL/reject_files_and_cross_origin (0.00s)
+PASS
+ok  	github.com/arseniy9606/cruisecontrol---back/internal/api	0.043s
+?   	github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions	[no test files]
+?   	github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions_handler	[no test files]
+?   	github.com/arseniy9606/cruisecontrol---back/migrations	[no test files]

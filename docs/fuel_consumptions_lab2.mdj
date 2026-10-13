@@ -1,0 +1,817 @@
+{
+  "_type": "Project",
+  "_id": "733621856f504d27b90a958475781e7e",
+  "name": "Расход топлива автомобилей ЛР2",
+  "author": "arseniy9606",
+  "version": "2.0",
+  "ownedElements": [
+    {
+      "_type": "ERDDataModel",
+      "_id": "069e9324ddfe40b0a17263e24390ceae",
+      "_parent": {
+        "$ref": "733621856f504d27b90a958475781e7e"
+      },
+      "name": "PostgreSQL fuel_consumptions_lab2",
+      "ownedElements": [
+        {
+          "_type": "ERDDiagram",
+          "_id": "935ea5cf98fc4262a014fb5f737faa30",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "ЛР2 ER схема",
+          "visible": true,
+          "defaultDiagram": true,
+          "ownedViews": [
+            {
+              "_type": "ERDEntityView",
+              "_id": "2e61d31b149a4ed1918e99eb3d70e3e3",
+              "_parent": {
+                "$ref": "935ea5cf98fc4262a014fb5f737faa30"
+              },
+              "model": {
+                "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+              },
+              "left": 30,
+              "top": 60,
+              "width": 515,
+              "height": 126,
+              "font": "Arial;13;0",
+              "fillColor": "#FFFFFF",
+              "showShadow": false,
+              "subViews": [
+                {
+                  "_type": "LabelView",
+                  "_id": "f8835f9455a1481bb11bf5ce36da3e4f",
+                  "_parent": {
+                    "$ref": "2e61d31b149a4ed1918e99eb3d70e3e3"
+                  },
+                  "font": "Arial;13;1",
+                  "parentStyle": true,
+                  "text": "fuel_consumption_drivers"
+                },
+                {
+                  "_type": "ERDColumnCompartmentView",
+                  "_id": "f15f62e730594cc19cbb9088c7b1e237",
+                  "_parent": {
+                    "$ref": "2e61d31b149a4ed1918e99eb3d70e3e3"
+                  },
+                  "model": {
+                    "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+                  },
+                  "font": "Arial;13;0",
+                  "parentStyle": true,
+                  "subViews": []
+                }
+              ],
+              "nameLabel": {
+                "$ref": "f8835f9455a1481bb11bf5ce36da3e4f"
+              },
+              "columnCompartment": {
+                "$ref": "f15f62e730594cc19cbb9088c7b1e237"
+              }
+            },
+            {
+              "_type": "ERDEntityView",
+              "_id": "3303627fa434472da15cd12801172410",
+              "_parent": {
+                "$ref": "935ea5cf98fc4262a014fb5f737faa30"
+              },
+              "model": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "left": 760,
+              "top": 60,
+              "width": 515,
+              "height": 280,
+              "font": "Arial;13;0",
+              "fillColor": "#FFFFFF",
+              "showShadow": false,
+              "subViews": [
+                {
+                  "_type": "LabelView",
+                  "_id": "c195642e2ab349a0875616f072d88a73",
+                  "_parent": {
+                    "$ref": "3303627fa434472da15cd12801172410"
+                  },
+                  "font": "Arial;13;1",
+                  "parentStyle": true,
+                  "text": "fuel_consumptions"
+                },
+                {
+                  "_type": "ERDColumnCompartmentView",
+                  "_id": "eb713f37ea9a4d78bdbd4834594f2eed",
+                  "_parent": {
+                    "$ref": "3303627fa434472da15cd12801172410"
+                  },
+                  "model": {
+                    "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+                  },
+                  "font": "Arial;13;0",
+                  "parentStyle": true,
+                  "subViews": []
+                }
+              ],
+              "nameLabel": {
+                "$ref": "c195642e2ab349a0875616f072d88a73"
+              },
+              "columnCompartment": {
+                "$ref": "eb713f37ea9a4d78bdbd4834594f2eed"
+              }
+            },
+            {
+              "_type": "ERDEntityView",
+              "_id": "c1c66ab946234232b7b1cc543b126237",
+              "_parent": {
+                "$ref": "935ea5cf98fc4262a014fb5f737faa30"
+              },
+              "model": {
+                "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+              },
+              "left": 300,
+              "top": 460,
+              "width": 510,
+              "height": 104,
+              "font": "Arial;13;0",
+              "fillColor": "#FFFFFF",
+              "showShadow": false,
+              "subViews": [
+                {
+                  "_type": "LabelView",
+                  "_id": "59150fb396974a7f9f35891479ceeda6",
+                  "_parent": {
+                    "$ref": "c1c66ab946234232b7b1cc543b126237"
+                  },
+                  "font": "Arial;13;1",
+                  "parentStyle": true,
+                  "text": "fuel_consumption_likes"
+                },
+                {
+                  "_type": "ERDColumnCompartmentView",
+                  "_id": "9f87f0bb85924ba5a18250ab4de82c93",
+                  "_parent": {
+                    "$ref": "c1c66ab946234232b7b1cc543b126237"
+                  },
+                  "model": {
+                    "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+                  },
+                  "font": "Arial;13;0",
+                  "parentStyle": true,
+                  "subViews": []
+                }
+              ],
+              "nameLabel": {
+                "$ref": "59150fb396974a7f9f35891479ceeda6"
+              },
+              "columnCompartment": {
+                "$ref": "9f87f0bb85924ba5a18250ab4de82c93"
+              }
+            },
+            {
+              "_type": "ERDRelationshipView",
+              "_id": "a3d9ca3593134522a885694440b531fb",
+              "_parent": {
+                "$ref": "935ea5cf98fc4262a014fb5f737faa30"
+              },
+              "model": {
+                "$ref": "c76ac6cee55944c880935266b15a42f9"
+              },
+              "head": {
+                "$ref": "3303627fa434472da15cd12801172410"
+              },
+              "tail": {
+                "$ref": "2e61d31b149a4ed1918e99eb3d70e3e3"
+              },
+              "lineStyle": 0,
+              "points": "545:110;760:110",
+              "font": "Arial;13;0",
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "8f026b766e6b44bd898f9ad3907a64e3",
+                  "_parent": {
+                    "$ref": "a3d9ca3593134522a885694440b531fb"
+                  },
+                  "model": {
+                    "$ref": "c76ac6cee55944c880935266b15a42f9"
+                  },
+                  "hostEdge": {
+                    "$ref": "a3d9ca3593134522a885694440b531fb"
+                  },
+                  "edgePosition": 0,
+                  "alpha": 1.5708,
+                  "distance": 15,
+                  "font": "Arial;13;0",
+                  "text": ""
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "d3d3a087210e46b797cc72813f49bd31",
+                  "_parent": {
+                    "$ref": "a3d9ca3593134522a885694440b531fb"
+                  },
+                  "model": {
+                    "$ref": "c76ac6cee55944c880935266b15a42f9"
+                  },
+                  "hostEdge": {
+                    "$ref": "a3d9ca3593134522a885694440b531fb"
+                  },
+                  "edgePosition": 1,
+                  "alpha": 0.5236,
+                  "distance": 30,
+                  "font": "Arial;13;0",
+                  "text": ""
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "ac58a2b979f2409ca258b7aaf5735985",
+                  "_parent": {
+                    "$ref": "a3d9ca3593134522a885694440b531fb"
+                  },
+                  "model": {
+                    "$ref": "c76ac6cee55944c880935266b15a42f9"
+                  },
+                  "hostEdge": {
+                    "$ref": "a3d9ca3593134522a885694440b531fb"
+                  },
+                  "edgePosition": 2,
+                  "alpha": -0.5236,
+                  "distance": 30,
+                  "font": "Arial;13;0",
+                  "text": ""
+                }
+              ],
+              "nameLabel": {
+                "$ref": "8f026b766e6b44bd898f9ad3907a64e3"
+              },
+              "tailNameLabel": {
+                "$ref": "d3d3a087210e46b797cc72813f49bd31"
+              },
+              "headNameLabel": {
+                "$ref": "ac58a2b979f2409ca258b7aaf5735985"
+              }
+            },
+            {
+              "_type": "ERDRelationshipView",
+              "_id": "bc2e0d93c25f49b9b357021d6ace9a20",
+              "_parent": {
+                "$ref": "935ea5cf98fc4262a014fb5f737faa30"
+              },
+              "model": {
+                "$ref": "3b6667cb48e54d3794f927fd31d53aa8"
+              },
+              "head": {
+                "$ref": "c1c66ab946234232b7b1cc543b126237"
+              },
+              "tail": {
+                "$ref": "2e61d31b149a4ed1918e99eb3d70e3e3"
+              },
+              "lineStyle": 0,
+              "points": "285:186;285:340;450:340;450:460",
+              "font": "Arial;13;0",
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "312f98d7ff3a4685ae6d739e0751f80d",
+                  "_parent": {
+                    "$ref": "bc2e0d93c25f49b9b357021d6ace9a20"
+                  },
+                  "model": {
+                    "$ref": "3b6667cb48e54d3794f927fd31d53aa8"
+                  },
+                  "hostEdge": {
+                    "$ref": "bc2e0d93c25f49b9b357021d6ace9a20"
+                  },
+                  "edgePosition": 0,
+                  "alpha": 1.5708,
+                  "distance": 15,
+                  "font": "Arial;13;0",
+                  "text": ""
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "e652db5a2824492fb43ead68f8c8314c",
+                  "_parent": {
+                    "$ref": "bc2e0d93c25f49b9b357021d6ace9a20"
+                  },
+                  "model": {
+                    "$ref": "3b6667cb48e54d3794f927fd31d53aa8"
+                  },
+                  "hostEdge": {
+                    "$ref": "bc2e0d93c25f49b9b357021d6ace9a20"
+                  },
+                  "edgePosition": 1,
+                  "alpha": 0.5236,
+                  "distance": 30,
+                  "font": "Arial;13;0",
+                  "text": ""
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "9e04d63a786c4f98a6d2c2474a109428",
+                  "_parent": {
+                    "$ref": "bc2e0d93c25f49b9b357021d6ace9a20"
+                  },
+                  "model": {
+                    "$ref": "3b6667cb48e54d3794f927fd31d53aa8"
+                  },
+                  "hostEdge": {
+                    "$ref": "bc2e0d93c25f49b9b357021d6ace9a20"
+                  },
+                  "edgePosition": 2,
+                  "alpha": -0.5236,
+                  "distance": 30,
+                  "font": "Arial;13;0",
+                  "text": ""
+                }
+              ],
+              "nameLabel": {
+                "$ref": "312f98d7ff3a4685ae6d739e0751f80d"
+              },
+              "tailNameLabel": {
+                "$ref": "e652db5a2824492fb43ead68f8c8314c"
+              },
+              "headNameLabel": {
+                "$ref": "9e04d63a786c4f98a6d2c2474a109428"
+              }
+            },
+            {
+              "_type": "ERDRelationshipView",
+              "_id": "c57dd162aa61452ba01dcc55b4081c6f",
+              "_parent": {
+                "$ref": "935ea5cf98fc4262a014fb5f737faa30"
+              },
+              "model": {
+                "$ref": "96209cbc02b34a0eb78a2ba570a48d86"
+              },
+              "head": {
+                "$ref": "c1c66ab946234232b7b1cc543b126237"
+              },
+              "tail": {
+                "$ref": "3303627fa434472da15cd12801172410"
+              },
+              "lineStyle": 0,
+              "points": "1020:340;1020:506;810:506",
+              "font": "Arial;13;0",
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "226c915c9806460c9ce1e14afba7c98f",
+                  "_parent": {
+                    "$ref": "c57dd162aa61452ba01dcc55b4081c6f"
+                  },
+                  "model": {
+                    "$ref": "96209cbc02b34a0eb78a2ba570a48d86"
+                  },
+                  "hostEdge": {
+                    "$ref": "c57dd162aa61452ba01dcc55b4081c6f"
+                  },
+                  "edgePosition": 0,
+                  "alpha": 1.5708,
+                  "distance": 15,
+                  "font": "Arial;13;0",
+                  "text": ""
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "c9da824e3441475d86fb4fa4f14c835a",
+                  "_parent": {
+                    "$ref": "c57dd162aa61452ba01dcc55b4081c6f"
+                  },
+                  "model": {
+                    "$ref": "96209cbc02b34a0eb78a2ba570a48d86"
+                  },
+                  "hostEdge": {
+                    "$ref": "c57dd162aa61452ba01dcc55b4081c6f"
+                  },
+                  "edgePosition": 1,
+                  "alpha": 0.5236,
+                  "distance": 30,
+                  "font": "Arial;13;0",
+                  "text": ""
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "ba20204fc56f4b45ab611a4f160fc756",
+                  "_parent": {
+                    "$ref": "c57dd162aa61452ba01dcc55b4081c6f"
+                  },
+                  "model": {
+                    "$ref": "96209cbc02b34a0eb78a2ba570a48d86"
+                  },
+                  "hostEdge": {
+                    "$ref": "c57dd162aa61452ba01dcc55b4081c6f"
+                  },
+                  "edgePosition": 2,
+                  "alpha": -0.5236,
+                  "distance": 30,
+                  "font": "Arial;13;0",
+                  "text": ""
+                }
+              ],
+              "nameLabel": {
+                "$ref": "226c915c9806460c9ce1e14afba7c98f"
+              },
+              "tailNameLabel": {
+                "$ref": "c9da824e3441475d86fb4fa4f14c835a"
+              },
+              "headNameLabel": {
+                "$ref": "ba20204fc56f4b45ab611a4f160fc756"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "ERDEntity",
+          "_id": "8f5192dc45f14c3bba83a73a0e094d53",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "fuel_consumption_drivers",
+          "columns": [
+            {
+              "_type": "ERDColumn",
+              "_id": "c6d19b8e6b5c4f818061048a33d2ca57",
+              "_parent": {
+                "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+              },
+              "name": "fuel_consumption_driver_id",
+              "type": "BIGINT",
+              "length": "",
+              "primaryKey": true,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "914da6d2926d4b10866c61daf7777890",
+              "_parent": {
+                "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+              },
+              "name": "fuel_consumption_driver_login",
+              "type": "VARCHAR",
+              "length": "60",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": true
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "ad1aa4c2eb1b4d1ab06f0e751ffd8104",
+              "_parent": {
+                "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+              },
+              "name": "fuel_consumption_driver_name",
+              "type": "VARCHAR",
+              "length": "120",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "84d0a6d4a4294713a2a4b0b6ac051937",
+              "_parent": {
+                "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+              },
+              "name": "fuel_consumption_driver_created_at",
+              "type": "TIMESTAMPTZ",
+              "length": "",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            }
+          ]
+        },
+        {
+          "_type": "ERDEntity",
+          "_id": "f60f8b3673514a7dad5e66e9859e2947",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "fuel_consumptions",
+          "columns": [
+            {
+              "_type": "ERDColumn",
+              "_id": "b42250a23f8b4361aa6ea60388a2811f",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_id",
+              "type": "BIGINT",
+              "length": "",
+              "primaryKey": true,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "26fee8607fa7491b931eb1698cb3f06a",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_name",
+              "type": "VARCHAR",
+              "length": "120",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "246f3900320e4bdb93f2611a43466383",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_description",
+              "type": "VARCHAR",
+              "length": "1000",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "fd5331773db34d7aa0ea05d66f8b28ed",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_status",
+              "type": "VARCHAR",
+              "length": "20",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "47f1cbc2b5534ae2b88b10dfe0f61593",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_image_url",
+              "type": "VARCHAR",
+              "length": "500",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "6e360c5dc0bd42ce903be3a5cb4bf4d0",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_video_url",
+              "type": "VARCHAR",
+              "length": "500",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "95d09c5ca9e148309df7444718cc1a1f",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_tank_volume",
+              "type": "NUMERIC",
+              "length": "7,1",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "d536caabf845487a922353d8d33fa7ea",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_rate",
+              "type": "NUMERIC",
+              "length": "4,1",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "473be6744baa43fb8a3e41f3530b14cf",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_created_at",
+              "type": "TIMESTAMPTZ",
+              "length": "",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "4fc6b49b22aa4482a11079f37aba6f12",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_creator_id",
+              "type": "BIGINT",
+              "length": "",
+              "primaryKey": false,
+              "foreignKey": true,
+              "nullable": false,
+              "unique": false,
+              "referenceTo": {
+                "$ref": "c6d19b8e6b5c4f818061048a33d2ca57"
+              }
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "c8579b3da38c4475b63a9969f442cc70",
+              "_parent": {
+                "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+              },
+              "name": "fuel_consumption_formed_at",
+              "type": "TIMESTAMPTZ",
+              "length": "",
+              "primaryKey": false,
+              "foreignKey": false,
+              "nullable": true,
+              "unique": false
+            }
+          ]
+        },
+        {
+          "_type": "ERDEntity",
+          "_id": "77ab2bdf7c59471487b9cfa9e10e1168",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "fuel_consumption_likes",
+          "columns": [
+            {
+              "_type": "ERDColumn",
+              "_id": "872819b964f145f0b0cac260743fad31",
+              "_parent": {
+                "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+              },
+              "name": "fuel_consumption_like_id",
+              "type": "BIGINT",
+              "length": "",
+              "primaryKey": true,
+              "foreignKey": false,
+              "nullable": false,
+              "unique": false
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "a7a065a3b2a94204bb6c7b233e58af6b",
+              "_parent": {
+                "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+              },
+              "name": "fuel_consumption_id",
+              "type": "BIGINT",
+              "length": "",
+              "primaryKey": false,
+              "foreignKey": true,
+              "nullable": false,
+              "unique": false,
+              "referenceTo": {
+                "$ref": "b42250a23f8b4361aa6ea60388a2811f"
+              }
+            },
+            {
+              "_type": "ERDColumn",
+              "_id": "84ad33bd8165481b8dd47bd490eeece8",
+              "_parent": {
+                "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+              },
+              "name": "fuel_consumption_driver_id",
+              "type": "BIGINT",
+              "length": "",
+              "primaryKey": false,
+              "foreignKey": true,
+              "nullable": false,
+              "unique": false,
+              "referenceTo": {
+                "$ref": "c6d19b8e6b5c4f818061048a33d2ca57"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "ERDRelationship",
+          "_id": "c76ac6cee55944c880935266b15a42f9",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "",
+          "identifying": false,
+          "end1": {
+            "_type": "ERDRelationshipEnd",
+            "_id": "9c7ef2066d774ea7b0a96700b0e61a47",
+            "_parent": {
+              "$ref": "c76ac6cee55944c880935266b15a42f9"
+            },
+            "reference": {
+              "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+            },
+            "cardinality": "1",
+            "name": ""
+          },
+          "end2": {
+            "_type": "ERDRelationshipEnd",
+            "_id": "980a327e9e6642afb58ef0481430a19c",
+            "_parent": {
+              "$ref": "c76ac6cee55944c880935266b15a42f9"
+            },
+            "reference": {
+              "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+            },
+            "cardinality": "0..*",
+            "name": ""
+          }
+        },
+        {
+          "_type": "ERDRelationship",
+          "_id": "3b6667cb48e54d3794f927fd31d53aa8",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "",
+          "identifying": false,
+          "end1": {
+            "_type": "ERDRelationshipEnd",
+            "_id": "7e603c04a2a144e4bb52451b10117f14",
+            "_parent": {
+              "$ref": "3b6667cb48e54d3794f927fd31d53aa8"
+            },
+            "reference": {
+              "$ref": "8f5192dc45f14c3bba83a73a0e094d53"
+            },
+            "cardinality": "1",
+            "name": ""
+          },
+          "end2": {
+            "_type": "ERDRelationshipEnd",
+            "_id": "eba34b73509e4223a9a847f22f5b6df3",
+            "_parent": {
+              "$ref": "3b6667cb48e54d3794f927fd31d53aa8"
+            },
+            "reference": {
+              "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+            },
+            "cardinality": "0..*",
+            "name": ""
+          }
+        },
+        {
+          "_type": "ERDRelationship",
+          "_id": "96209cbc02b34a0eb78a2ba570a48d86",
+          "_parent": {
+            "$ref": "069e9324ddfe40b0a17263e24390ceae"
+          },
+          "name": "",
+          "identifying": false,
+          "end1": {
+            "_type": "ERDRelationshipEnd",
+            "_id": "44e8206b5e5a462f9b643b1b56c26722",
+            "_parent": {
+              "$ref": "96209cbc02b34a0eb78a2ba570a48d86"
+            },
+            "reference": {
+              "$ref": "f60f8b3673514a7dad5e66e9859e2947"
+            },
+            "cardinality": "1",
+            "name": ""
+          },
+          "end2": {
+            "_type": "ERDRelationshipEnd",
+            "_id": "0f904e03d10442e1adb7468fd0ed52b1",
+            "_parent": {
+              "$ref": "96209cbc02b34a0eb78a2ba570a48d86"
+            },
+            "reference": {
+              "$ref": "77ab2bdf7c59471487b9cfa9e10e1168"
+            },
+            "cardinality": "0..*",
+            "name": ""
+          }
+        }
+      ]
+    }
+  ]
+}
