@@ -11,7 +11,7 @@
       "_parent": {
         "$ref": "56cae06bb78c40f1bcf0d7eab3400ab4"
       },
-      "name": "PostgreSQL fuel_consumptions_lab2",
+      "name": "PostgreSQL cars_lab2",
       "ownedElements": [
         {
           "_type": "ERDDiagram",
