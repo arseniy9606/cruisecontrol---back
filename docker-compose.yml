@@ -1,104 +1,104 @@
-name: fuel_consumptions-lab2
+name: cars-lab2
 x-fuel-environment: &fuel-environment
-  FUEL_CONSUMPTIONS_DATABASE_URL: postgres://${FUEL_CONSUMPTIONS_DB_USER:-fuel_consumptions_student}:${FUEL_CONSUMPTIONS_DB_PASSWORD:-fuel_consumptions_lab2_password}@fuel_consumptions-postgres:5432/${FUEL_CONSUMPTIONS_DB_NAME:-fuel_consumptions_lab2}?sslmode=disable
-  FUEL_CONSUMPTIONS_LISTEN: 0.0.0.0:8082
-  FUEL_CONSUMPTIONS_MEDIA_URL: http://localhost:9100/fuel-consumptions
-  FUEL_CONSUMPTIONS_MEDIA_PROBE_URL: http://fuel-consumptions-minio:9000/fuel-consumptions
+  CARS_DATABASE_URL: postgres://${CARS_DB_USER:-cars_student}:${CARS_DB_PASSWORD:-cars_lab2_password}@cars-postgres:5432/${CARS_DB_NAME:-cars_lab2}?sslmode=disable
+  CARS_LISTEN: 0.0.0.0:8082
+  CARS_MEDIA_URL: http://localhost:9100/cars
+  CARS_MEDIA_PROBE_URL: http://cars-minio:9000/cars
 services:
-  fuel_consumptions-postgres:
+  cars-postgres:
     image: postgres:16.10-bookworm
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${FUEL_CONSUMPTIONS_DB_USER:-fuel_consumptions_student}
-      POSTGRES_PASSWORD: ${FUEL_CONSUMPTIONS_DB_PASSWORD:-fuel_consumptions_lab2_password}
-      POSTGRES_DB: ${FUEL_CONSUMPTIONS_DB_NAME:-fuel_consumptions_lab2}
+      POSTGRES_USER: ${CARS_DB_USER:-cars_student}
+      POSTGRES_PASSWORD: ${CARS_DB_PASSWORD:-cars_lab2_password}
+      POSTGRES_DB: ${CARS_DB_NAME:-cars_lab2}
     ports: ["127.0.0.1:55432:5432"]
-    volumes: ["fuel_consumptions-postgres-data:/var/lib/postgresql/data"]
+    volumes: ["cars-postgres-data:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 3s
       timeout: 3s
       retries: 30
-  fuel_consumptions-adminer:
+  cars-adminer:
     image: adminer:5.4.1
     restart: unless-stopped
     environment:
-      ADMINER_DEFAULT_SERVER: fuel_consumptions-postgres
+      ADMINER_DEFAULT_SERVER: cars-postgres
     ports: ["127.0.0.1:8083:8080"]
     depends_on:
-      fuel_consumptions-postgres: {condition: service_healthy}
-  fuel_consumptions-minio:
-    hostname: fuel-consumptions-minio
+      cars-postgres: {condition: service_healthy}
+  cars-minio:
+    hostname: cars-minio
     networks:
       default:
-        aliases: [fuel-consumptions-minio]
+        aliases: [cars-minio]
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
       target: minio
-    image: fuel_consumptions-minio:lab1
+    image: cars-minio:lab1
     restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-fuel_consumptions_root}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-fuel_consumptions_media_password}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-cars_root}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-cars_media_password}
     command: server /data --console-address ":9001"
     ports: ["127.0.0.1:9100:9000", "127.0.0.1:9101:9001"]
-    volumes: ["fuel_consumptions-minio-data:/data"]
-  fuel_consumptions-media-init:
+    volumes: ["cars-minio-data:/data"]
+  cars-media-init:
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
       target: media-init
-    image: fuel_consumptions-mc:lab1
-    depends_on: [fuel_consumptions-minio]
+    image: cars-mc:lab1
+    depends_on: [cars-minio]
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-fuel_consumptions_root}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-fuel_consumptions_media_password}
-    volumes: ["./media:/fuel_consumptions-media:ro"]
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-cars_root}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-cars_media_password}
+    volumes: ["./media:/cars-media:ro"]
     entrypoint: /bin/sh
     command:
       - -ec
       - |
-        fuel_consumptions_attempt=0
-        until mc alias set fuel_consumptions http://fuel-consumptions-minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"; do
-          fuel_consumptions_attempt=$$((fuel_consumptions_attempt + 1))
-          [ "$$fuel_consumptions_attempt" -lt 30 ] || exit 1
+        cars_attempt=0
+        until mc alias set cars http://cars-minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"; do
+          cars_attempt=$$((cars_attempt + 1))
+          [ "$$cars_attempt" -lt 30 ] || exit 1
           sleep 2
         done
-        mc mb --ignore-existing fuel_consumptions/fuel-consumptions
-        mc anonymous set download fuel_consumptions/fuel-consumptions
-        mc cp /fuel_consumptions-media/*.jpg /fuel_consumptions-media/*.mp4 fuel_consumptions/fuel-consumptions/
-  fuel_consumptions-migrate:
+        mc mb --ignore-existing cars/cars
+        mc anonymous set download cars/cars
+        mc cp /cars-media/*.jpg /cars-media/*.mp4 cars/cars/
+  cars-migrate:
     build:
       context: .
-      dockerfile: docker/fuel_consumptions.Dockerfile
-    image: fuel_consumptions-backend:lab2
+      dockerfile: docker/cars.Dockerfile
+    image: cars-backend:lab2
     environment: *fuel-environment
-    command: ["fuel_consumptions-migrate", "-seed"]
+    command: ["cars-migrate", "-seed"]
     depends_on:
-      fuel_consumptions-postgres: {condition: service_healthy}
-  fuel_consumptions-backend:
+      cars-postgres: {condition: service_healthy}
+  cars-backend:
     build:
       context: .
-      dockerfile: docker/fuel_consumptions.Dockerfile
-    image: fuel_consumptions-backend:lab2
+      dockerfile: docker/cars.Dockerfile
+    image: cars-backend:lab2
     restart: unless-stopped
     environment: *fuel-environment
     ports: ["127.0.0.1:8082:8082"]
     depends_on:
-      fuel_consumptions-migrate: {condition: service_completed_successfully}
-      fuel_consumptions-media-init: {condition: service_completed_successfully}
-  fuel_consumptions-checks:
+      cars-migrate: {condition: service_completed_successfully}
+      cars-media-init: {condition: service_completed_successfully}
+  cars-checks:
     profiles: [checks]
     build:
       context: .
-      dockerfile: docker/fuel_consumptions.Dockerfile
+      dockerfile: docker/cars.Dockerfile
       target: build
     environment:
-      FUEL_CONSUMPTIONS_TEST_DATABASE_URL: postgres://${FUEL_CONSUMPTIONS_DB_USER:-fuel_consumptions_student}:${FUEL_CONSUMPTIONS_DB_PASSWORD:-fuel_consumptions_lab2_password}@fuel_consumptions-postgres:5432/${FUEL_CONSUMPTIONS_DB_NAME:-fuel_consumptions_lab2}?sslmode=disable
+      CARS_TEST_DATABASE_URL: postgres://${CARS_DB_USER:-cars_student}:${CARS_DB_PASSWORD:-cars_lab2_password}@cars-postgres:5432/${CARS_DB_NAME:-cars_lab2}?sslmode=disable
     command: ["sh", "-ec", "go test -v ./... && go vet ./..."]
     depends_on:
-      fuel_consumptions-postgres: {condition: service_healthy}
+      cars-postgres: {condition: service_healthy}
 volumes:
-  fuel_consumptions-postgres-data:
-  fuel_consumptions-minio-data:
+  cars-postgres-data:
+  cars-minio-data:

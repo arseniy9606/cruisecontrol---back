@@ -6,4 +6,5 @@ bin/
 .vscode/
 .idea/
 *.exe
-docs/*-dom.json
+cars-server
+cars-migrate

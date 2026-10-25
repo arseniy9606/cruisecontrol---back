@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	fc "github.com/arseniy9606/cruisecontrol---back/internal/app/fuel_consumptions"
+	fc "github.com/arseniy9606/cruisecontrol---back/internal/app/cars"
 	"github.com/arseniy9606/cruisecontrol---back/migrations"
 	"log"
 	"time"
@@ -12,7 +12,7 @@ import (
 func main() {
 	seed := flag.Bool("seed", false, "initialize an empty demonstration database")
 	flag.Parse()
-	r, err := fc.OpenFuelConsumptionRepository(fc.FuelConsumptionDSN())
+	r, err := fc.OpenCarRepository(fc.CarDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,11 +23,11 @@ func main() {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	if err = migrations.ApplyFuelConsumptionSchema(ctx, db); err != nil {
+	if err = migrations.ApplyCarSchema(ctx, db); err != nil {
 		log.Fatal(err)
 	}
 	if *seed {
-		if err = migrations.SeedEmptyFuelConsumptionDatabase(ctx, db); err != nil {
+		if err = migrations.SeedEmptyCarDatabase(ctx, db); err != nil {
 			log.Fatal(err)
 		}
 	}
