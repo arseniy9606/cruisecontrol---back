@@ -3,10 +3,8 @@ bin/
 .DS_Store
 .tools/
 .runtime/
-docs/*-dom.json
-docs/
-media/
-scripts/
 .vscode/
 .idea/
 *.exe
+cars-server
+cars-migrate

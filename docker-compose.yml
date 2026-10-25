@@ -1,16 +1,16 @@
 services:
-  fuel_consumptions-minio:
+  cars-minio:
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
       target: minio
-    image: fuel_consumptions-minio:lab1
+    image: cars-minio:lab1
     restart: unless-stopped
-    hostname: fuel-consumptions-minio
+    hostname: cars-minio
     networks:
       default:
         aliases:
-          - fuel-consumptions-minio
+          - cars-minio
     ports:
       - "127.0.0.1:9000:9000"
       - "127.0.0.1:9001:9001"
@@ -18,34 +18,34 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-root}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-rootpassword}
     volumes:
-      - fuel_consumptions-media:/data
+      - cars-media:/data
     command: server /data --console-address ":9001"
-  fuel_consumptions-media-init:
+  cars-media-init:
     profiles: ["media"]
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
       target: media-init
-    image: fuel_consumptions-mc:lab1
+    image: cars-mc:lab1
     depends_on:
-      - fuel_consumptions-minio
+      - cars-minio
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-root}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-rootpassword}
     volumes:
-      - ./media:/fuel_consumptions-media:ro
+      - ./media:/cars-media:ro
     entrypoint: /bin/sh
     command:
       - -ec
       - |
-        fuel_consumptions_attempt=0
-        until mc alias set fuel_consumptions http://fuel-consumptions-minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"; do
-          fuel_consumptions_attempt=$$((fuel_consumptions_attempt + 1))
-          [ "$$fuel_consumptions_attempt" -lt 30 ] || exit 1
+        cars_attempt=0
+        until mc alias set cars http://cars-minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"; do
+          cars_attempt=$$((cars_attempt + 1))
+          [ "$$cars_attempt" -lt 30 ] || exit 1
           sleep 2
         done
-        mc mb --ignore-existing fuel_consumptions/fuel-consumptions
-        mc anonymous set download fuel_consumptions/fuel-consumptions
-        mc cp /fuel_consumptions-media/*.jpg /fuel_consumptions-media/*.mp4 fuel_consumptions/fuel-consumptions/
+        mc mb --ignore-existing cars/cars
+        mc anonymous set download cars/cars
+        mc cp /cars-media/*.jpg /cars-media/*.mp4 cars/cars/
 volumes:
-  fuel_consumptions-media:
+  cars-media:

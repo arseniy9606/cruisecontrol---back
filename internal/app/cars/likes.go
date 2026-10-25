@@ -1,4 +1,4 @@
-package fuel_consumptions
+package cars
 
 import (
 	"encoding/json"
@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 )
 
-var ErrFuelConsumptionNotFound = errors.New("published fuel consumption not found")
+var ErrCarNotFound = errors.New("published fuel consumption not found")
 
 // UseLikesFile adds local persistence to the same collection, without a database.
-func (r *FuelConsumptionRepository) UseLikesFile(path string) error {
+func (r *CarRepository) UseLikesFile(path string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.likesFile = path
@@ -28,8 +28,8 @@ func (r *FuelConsumptionRepository) UseLikesFile(path string) error {
 	if err = json.Unmarshal(raw, &saved); err != nil {
 		return err
 	}
-	for i := range r.fuel_consumptions {
-		if ids, ok := saved[r.fuel_consumptions[i].FuelConsumptionID]; ok {
+	for i := range r.cars {
+		if ids, ok := saved[r.cars[i].CarID]; ok {
 			unique := make(map[int]bool)
 			clean := make([]int, 0, len(ids))
 			for _, id := range ids {
@@ -38,25 +38,25 @@ func (r *FuelConsumptionRepository) UseLikesFile(path string) error {
 					unique[id] = true
 				}
 			}
-			r.fuel_consumptions[i].FuelConsumptionLikedBy = clean
+			r.cars[i].CarLikedBy = clean
 		}
 	}
 	return nil
 }
 
 // ToggleLike is atomic: the same visitor can add or remove only their own like.
-func (r *FuelConsumptionRepository) ToggleLike(id, visitor int) (bool, error) {
+func (r *CarRepository) ToggleLike(id, visitor int) (bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if visitor <= 0 {
 		return false, errors.New("invalid visitor")
 	}
-	for i := range r.fuel_consumptions {
-		car := &r.fuel_consumptions[i]
-		if car.FuelConsumptionID != id || car.FuelConsumptionStatus != FuelConsumptionPublished {
+	for i := range r.cars {
+		car := &r.cars[i]
+		if car.CarID != id || car.CarStatus != CarPublished {
 			continue
 		}
-		previous := append([]int(nil), car.FuelConsumptionLikedBy...)
+		previous := append([]int(nil), car.CarLikedBy...)
 		liked := true
 		next := make([]int, 0, len(previous)+1)
 		for _, v := range previous {
@@ -69,11 +69,11 @@ func (r *FuelConsumptionRepository) ToggleLike(id, visitor int) (bool, error) {
 		if liked {
 			next = append(next, visitor)
 		}
-		car.FuelConsumptionLikedBy = next
+		car.CarLikedBy = next
 		if r.likesFile != "" {
 			saved := make(map[int][]int)
-			for _, c := range r.fuel_consumptions {
-				saved[c.FuelConsumptionID] = c.FuelConsumptionLikedBy
+			for _, c := range r.cars {
+				saved[c.CarID] = c.CarLikedBy
 			}
 			raw, err := json.MarshalIndent(saved, "", "  ")
 			if err == nil {
@@ -81,7 +81,7 @@ func (r *FuelConsumptionRepository) ToggleLike(id, visitor int) (bool, error) {
 			}
 			if err == nil {
 				var tmp *os.File
-				tmp, err = os.CreateTemp(filepath.Dir(r.likesFile), "fuel_consumptions-likes-*.tmp")
+				tmp, err = os.CreateTemp(filepath.Dir(r.likesFile), "cars-likes-*.tmp")
 				if err == nil {
 					name := tmp.Name()
 					_, err = tmp.Write(raw)
@@ -101,11 +101,11 @@ func (r *FuelConsumptionRepository) ToggleLike(id, visitor int) (bool, error) {
 				}
 			}
 			if err != nil {
-				car.FuelConsumptionLikedBy = previous
+				car.CarLikedBy = previous
 				return false, err
 			}
 		}
 		return liked, nil
 	}
-	return false, ErrFuelConsumptionNotFound
+	return false, ErrCarNotFound
 }

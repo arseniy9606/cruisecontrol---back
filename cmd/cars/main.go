@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	if err := api.StartFuelConsumptionServer(); err != nil {
+	if err := api.StartCarServer(); err != nil {
 		log.Fatal(err)
 	}
 }
