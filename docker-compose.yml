@@ -1,104 +1,71 @@
-name: cars-lab2
-x-fuel-environment: &fuel-environment
-  CARS_DATABASE_URL: postgres://${CARS_DB_USER:-cars_student}:${CARS_DB_PASSWORD:-cars_lab2_password}@cars-postgres:5432/${CARS_DB_NAME:-cars_lab2}?sslmode=disable
-  CARS_LISTEN: 0.0.0.0:8082
-  CARS_MEDIA_URL: http://localhost:9100/cars
-  CARS_MEDIA_PROBE_URL: http://cars-minio:9000/cars
+name: cruisecontrol-lab3
+x-env: &env
+  DATABASE_URL: postgres://student:lab3_password@postgres:5432/fuel_consumptions?sslmode=disable
+  MINIO_ENDPOINT: minio:9000
+  MINIO_ACCESS_KEY: lab3_root
+  MINIO_SECRET_KEY: lab3_media_password
+  MEDIA_PUBLIC_URL: http://localhost:9200/cars
 services:
-  cars-postgres:
+  postgres:
     image: postgres:16.10-bookworm
-    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${CARS_DB_USER:-cars_student}
-      POSTGRES_PASSWORD: ${CARS_DB_PASSWORD:-cars_lab2_password}
-      POSTGRES_DB: ${CARS_DB_NAME:-cars_lab2}
-    ports: ["127.0.0.1:55432:5432"]
-    volumes: ["cars-postgres-data:/var/lib/postgresql/data"]
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: lab3_password
+      POSTGRES_DB: fuel_consumptions
+    ports: ["127.0.0.1:55433:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 3s
+      test: ["CMD-SHELL", "pg_isready -U student -d fuel_consumptions"]
+      interval: 2s
       timeout: 3s
       retries: 30
-  cars-adminer:
-    image: adminer:5.4.1
-    restart: unless-stopped
-    environment:
-      ADMINER_DEFAULT_SERVER: cars-postgres
-    ports: ["127.0.0.1:8083:8080"]
-    depends_on:
-      cars-postgres: {condition: service_healthy}
-  cars-minio:
-    hostname: cars-minio
-    networks:
-      default:
-        aliases: [cars-minio]
+  minio:
+    image: fuel_consumptions-minio:lab1
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
       target: minio
-    image: cars-minio:lab1
-    restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-cars_root}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-cars_media_password}
+      MINIO_ROOT_USER: lab3_root
+      MINIO_ROOT_PASSWORD: lab3_media_password
     command: server /data --console-address ":9001"
-    ports: ["127.0.0.1:9100:9000", "127.0.0.1:9101:9001"]
-    volumes: ["cars-minio-data:/data"]
-  cars-media-init:
+    ports: ["127.0.0.1:9200:9000", "127.0.0.1:9201:9001"]
+    volumes: ["media-data:/data"]
+  media-init:
+    image: fuel_consumptions-mc:lab1
     build:
       context: .
       dockerfile: docker/minio.Dockerfile
       target: media-init
-    image: cars-mc:lab1
-    depends_on: [cars-minio]
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-cars_root}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-cars_media_password}
-    volumes: ["./media:/cars-media:ro"]
+    depends_on: [minio]
+    volumes: ["./media:/media:ro"]
     entrypoint: /bin/sh
     command:
       - -ec
       - |
-        cars_attempt=0
-        until mc alias set cars http://cars-minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"; do
-          cars_attempt=$$((cars_attempt + 1))
-          [ "$$cars_attempt" -lt 30 ] || exit 1
-          sleep 2
-        done
-        mc mb --ignore-existing cars/cars
-        mc anonymous set download cars/cars
-        mc cp /cars-media/*.jpg /cars-media/*.mp4 cars/cars/
-  cars-migrate:
+        until mc alias set lab3 http://minio:9000 lab3_root lab3_media_password; do sleep 1; done
+        mc mb --ignore-existing lab3/cars
+        mc anonymous set download lab3/cars
+        mc cp /media/*.jpg /media/*.mp4 lab3/cars/
+  migrate:
+    image: cruisecontrol:lab3
     build:
       context: .
       dockerfile: docker/cars.Dockerfile
-    image: cars-backend:lab2
-    environment: *fuel-environment
-    command: ["cars-migrate", "-seed"]
+    environment: *env
+    command: ["migrate"]
     depends_on:
-      cars-postgres: {condition: service_healthy}
-  cars-backend:
+      postgres: {condition: service_healthy}
+  api:
+    image: cruisecontrol:lab3
     build:
       context: .
       dockerfile: docker/cars.Dockerfile
-    image: cars-backend:lab2
-    restart: unless-stopped
-    environment: *fuel-environment
-    ports: ["127.0.0.1:8082:8082"]
+    environment: *env
+    ports: ["127.0.0.1:8085:8080"]
     depends_on:
-      cars-migrate: {condition: service_completed_successfully}
-      cars-media-init: {condition: service_completed_successfully}
-  cars-checks:
-    profiles: [checks]
-    build:
-      context: .
-      dockerfile: docker/cars.Dockerfile
-      target: build
-    environment:
-      CARS_TEST_DATABASE_URL: postgres://${CARS_DB_USER:-cars_student}:${CARS_DB_PASSWORD:-cars_lab2_password}@cars-postgres:5432/${CARS_DB_NAME:-cars_lab2}?sslmode=disable
-    command: ["sh", "-ec", "go test -v ./... && go vet ./..."]
-    depends_on:
-      cars-postgres: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
+      media-init: {condition: service_completed_successfully}
 volumes:
-  cars-postgres-data:
-  cars-minio-data:
+  postgres-data:
+  media-data:

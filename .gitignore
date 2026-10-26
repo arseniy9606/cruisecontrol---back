@@ -8,3 +8,5 @@ bin/
 *.exe
 cars-server
 cars-migrate
+
+__pycache__/

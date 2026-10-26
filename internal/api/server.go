@@ -1,66 +1,71 @@
 package api
 
 import (
-	"context"
-	"fmt"
-	"github.com/arseniy9606/cruisecontrol---back/internal/app/car_handler"
-	fc "github.com/arseniy9606/cruisecontrol---back/internal/app/cars"
+	"encoding/json"
+	"errors"
+	"github.com/arseniy9606/cruisecontrol---back/internal/service"
+	"github.com/arseniy9606/cruisecontrol---back/internal/storage"
 	"github.com/gin-gonic/gin"
-	"html/template"
+	"gorm.io/gorm"
+	"io"
+	"log"
 	"net/http"
-	"net/url"
-	"strings"
-	"time"
+	"strconv"
 )
 
-func NewCarRouter(projectRoot string, repository *fc.CarRepository, media *fc.CarMedia) *gin.Engine {
-	router := gin.Default()
-	router.SetTrustedProxies(nil)
-	router.SetFuncMap(template.FuncMap{"carsFuel": func(n float64) string { return strings.ReplaceAll(fmt.Sprintf("%.1f", n), ".", ",") }})
-	router.LoadHTMLGlob(projectRoot + "/templates/*.html")
-	router.Static("/cars-assets", projectRoot+"/resources")
-	router.Use(func(ctx *gin.Context) {
-		if ctx.Request.Method == http.MethodPost {
-			if origin := ctx.GetHeader("Origin"); origin != "" {
-				u, err := url.Parse(origin)
-				if err != nil || u.Host != ctx.Request.Host {
-					ctx.AbortWithStatus(403)
-					return
-				}
-			}
-			if !strings.HasPrefix(ctx.GetHeader("Content-Type"), "application/x-www-form-urlencoded") {
-				ctx.AbortWithStatus(415)
-				return
-			}
-			ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 16*1024)
-			if err := ctx.Request.ParseForm(); err != nil {
-				ctx.AbortWithStatus(400)
-				return
-			}
-		}
-		ctx.Next()
-	})
-	h := &car_handler.CarHandler{CarRepository: repository, Media: media}
-	// Exactly six controllers; static assets are separate routes.
-	router.GET("/cars", h.GetCarTiles)
-	router.GET("/cars/draft", h.GetCarDraft)
-	router.GET("/cars/feed/*carsID", h.GetCarFeed)
-	router.POST("/cars/create", h.PostCarCreate)
-	router.POST("/cars/publish", h.PostCarPublish)
-	router.POST("/cars/:carsDeleteID/delete", h.PostCarDelete)
-	return router
+type Server struct {
+	DB    *gorm.DB
+	Media *storage.Media
 }
-func StartCarServer() error {
-	r, err := fc.OpenCarRepository(fc.CarDSN())
-	if err != nil {
-		return err
+
+func (s *Server) Router() *gin.Engine {
+	r := gin.New()
+	r.Use(gin.Recovery())
+	r.HandleMethodNotAllowed = true
+	r.NoRoute(func(c *gin.Context) { c.Status(404) })
+	r.NoMethod(func(c *gin.Context) { c.Status(404) })
+	a := r.Group("/api")
+	a.GET("/cars", s.ListCars)
+	a.GET("/cars/:id", s.GetCar)
+	a.POST("/cars", s.CreateCar)
+	a.POST("/fuel_consumptions/draft/cars/:carID", s.AddCar)
+	a.PUT("/fuel_consumptions/:id/cars/:carID", s.UpdateItem)
+	a.DELETE("/fuel_consumptions/:id/cars/:carID", s.DeleteItem)
+	a.GET("/fuel_consumptions/cart", s.Cart)
+	a.GET("/fuel_consumptions", s.ListRequests)
+	a.GET("/fuel_consumptions/:id", s.GetRequest)
+	a.PUT("/fuel_consumptions/:id", s.UpdateRequest)
+	a.PUT("/fuel_consumptions/:id/formation", s.FormRequest)
+	a.PUT("/fuel_consumptions/:id/completion", s.CompleteRequest)
+	a.DELETE("/fuel_consumptions/:id", s.DeleteRequest)
+	a.POST("/users", s.Register)
+	a.POST("/users/login", s.AuthStub)
+	a.POST("/users/logout", s.AuthStub)
+	return r
+}
+func fail(c *gin.Context, err error) {
+	if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, service.ErrInvalid) || errors.Is(err, gorm.ErrDuplicatedKey) {
+		c.Status(404)
+		return
 	}
-	defer r.Close()
-	if err = r.ValidateDriver(context.Background()); err != nil {
-		return err
+	log.Printf("request failed: %v", err)
+	c.Status(500)
+}
+func readJSON(c *gin.Context, v any) bool {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 1<<20)
+	d := json.NewDecoder(c.Request.Body)
+	d.DisallowUnknownFields()
+	if d.Decode(v) != nil || d.Decode(&struct{}{}) != io.EOF {
+		c.Status(404)
+		return false
 	}
-	public := fc.CarEnv("CARS_MEDIA_URL", "http://localhost:9100/cars")
-	media := fc.NewCarMedia(public, fc.CarEnv("CARS_MEDIA_PROBE_URL", public))
-	server := &http.Server{Addr: fc.CarEnv("CARS_LISTEN", "127.0.0.1:8082"), Handler: NewCarRouter(".", r, media), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
-	return server.ListenAndServe()
+	return true
+}
+func id(c *gin.Context, key string) (uint, bool) {
+	v, e := strconv.ParseUint(c.Param(key), 10, 32)
+	if e != nil || v == 0 {
+		c.Status(404)
+		return 0, false
+	}
+	return uint(v), true
 }
