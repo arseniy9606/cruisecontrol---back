@@ -13,7 +13,7 @@ import (
 )
 
 func (s *Server) ListCars(c *gin.Context) {
-	q := s.DB.Where("status = ?", "published")
+	q := s.DB.Preload("Creator").Where("status = ?", "published")
 	min, max := 0.0, math.MaxFloat64
 	for _, k := range []string{"consumption_min", "consumption_max"} {
 		if raw, ok := c.GetQuery(k); ok {
@@ -40,21 +40,14 @@ func (s *Server) ListCars(c *gin.Context) {
 	}
 	out := []CarDTO{}
 	for _, x := range cars {
-		out = append(out, s.carDTO(x))
+		dto, e := s.carDTO(x)
+		if e != nil {
+			fail(c, e)
+			return
+		}
+		out = append(out, dto)
 	}
 	c.JSON(200, out)
-}
-func (s *Server) GetCar(c *gin.Context) {
-	i, ok := id(c, "id")
-	if !ok {
-		return
-	}
-	var x model.Car
-	if e := s.DB.Where("status = ?", "published").First(&x, i).Error; e != nil {
-		fail(c, e)
-		return
-	}
-	c.JSON(200, s.carDTO(x))
 }
 func (s *Server) CreateCar(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 32<<20)
@@ -76,15 +69,24 @@ func (s *Server) CreateCar(c *gin.Context) {
 			return
 		}
 	}
-	rate, e := strconv.ParseFloat(c.PostForm("consumption_rate"), 64)
-	tank, e2 := strconv.ParseFloat(c.PostForm("fuel_tank_volume"), 64)
 	name := strings.TrimSpace(c.PostForm("name"))
 	desc := c.PostForm("description")
-	if e != nil || e2 != nil || rate <= 0 || rate > 99999 || tank <= 0 || tank > 99999 || math.IsNaN(rate) || math.IsNaN(tank) || name == "" || len([]rune(name)) > 120 || len([]rune(desc)) > 1000 {
+	if name == "" || len([]rune(name)) > 120 || len([]rune(desc)) > 1000 {
 		c.Status(404)
 		return
 	}
-	car := model.Car{Name: name, Description: desc, Status: "published", ConsumptionRate: rate, FuelTankVolume: tank}
+	var rate, tank *float64
+	for k, dst := range map[string]**float64{"consumption_rate": &rate, "fuel_tank_volume": &tank} {
+		if raw := c.PostForm(k); raw != "" {
+			v, e := strconv.ParseFloat(raw, 64)
+			if e != nil || !validNumber(v) {
+				c.Status(404)
+				return
+			}
+			*dst = &v
+		}
+	}
+	car := model.Car{Name: name, Description: desc, Status: "draft", ConsumptionRate: rate, FuelTankVolume: tank, CreatorID: service.CurrentUser().ID}
 	success := false
 	defer func() {
 		if !success {
@@ -132,5 +134,5 @@ func (s *Server) CreateCar(c *gin.Context) {
 		return
 	}
 	success = true
-	c.JSON(201, s.carDTO(car))
+	s.respondCar(c, car, 201)
 }

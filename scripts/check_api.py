@@ -1,87 +1,55 @@
-"""Exercise the real HTTP API, PostgreSQL and MinIO. Run on the Lab 3 demo database."""
-import json, os, urllib.request, urllib.error, uuid, concurrent.futures
-from pathlib import Path
-BASE=os.getenv('API_URL','http://localhost:8085')+'/api'
-checks=0
-def check(value,label):
+"""Real HTTP checks; no external Python dependencies. Run with no active draft."""
+import json,urllib.request,urllib.error,uuid,pathlib,concurrent.futures
+BASE='http://localhost:8085/api';checks=0
+keys={'id','name','description','consumption_rate','fuel_tank_volume','image_url','video_url','creator','created_at','formed_at','is_owner','liked','likes_count'}
+def check(condition,label):
  global checks
- assert value,label
- checks+=1
- print('PASS',label)
-def call(method,path,body=None,code=200):
- data=json.dumps(body).encode() if body is not None else None
- req=urllib.request.Request(BASE+path,data=data,method=method,headers={'Content-Type':'application/json'})
- try:r=urllib.request.urlopen(req,timeout=20)
+ assert condition,label
+ checks+=1;print(f'PASS {checks:02d} {label}')
+def call(method,path,body=None,raw=None,headers=None):
+ if body is not None:raw=json.dumps(body).encode();headers={'Content-Type':'application/json'}
+ req=urllib.request.Request(BASE+path,data=raw,method=method,headers=headers or {})
+ try:r=urllib.request.urlopen(req)
  except urllib.error.HTTPError as e:r=e
- raw=r.read();check(r.status==code,f'{method} {path}: {r.status}')
- if code>=400:check(raw==b'','error body is empty')
- return json.loads(raw) if raw else None
-cars=call('GET','/cars');check(len(cars)>=4,'seed cars present')
-check('status' not in cars[0],'service status hidden')
-check(all(7<=x['consumption_rate']<=8 for x in call('GET','/cars?consumption_min=7&consumption_max=8')),'range filter')
-check(call('GET','/cars?consumption_min=900')==[],'empty list is array')
-call('GET','/cars?consumption_min=20&consumption_max=10',code=404)
-call('GET','/cars?consumption_min=NaN',code=404)
-call('GET','/cars/999999',code=404)
-call('POST','/fuel_consumptions',{},404)
-cart=call('GET','/fuel_consumptions/cart')
-check(cart['id'] is None,'start with empty draft; delete existing draft before rerunning')
-r=call('POST','/fuel_consumptions/draft/cars/1',code=201);rid=r['id'];keys=set(r);itemkeys=set(r['items'][0]);check(r['total_saved_liters'] is None,'calculation is null before formation')
-check(r['saving_percent'] is None and r['moderator'] is None,'nullable fields present')
-call('POST','/fuel_consumptions/draft/cars/1',code=404)
-r=call('POST','/fuel_consumptions/draft/cars/2',code=201);check(r['id']==rid and len(r['items'])==2,'same draft contains two cars')
-check(call('GET','/fuel_consumptions/cart')['count']==2,'cart counts cars')
-check(not any(x['id']==rid for x in call('GET','/fuel_consumptions')),'draft excluded from list')
-call('PUT',f'/fuel_consumptions/{rid}',{'creator_id':2},404)
-call('PUT',f'/fuel_consumptions/{rid}/completion',{'decision':'complete'},404)
-call('PUT',f'/fuel_consumptions/{rid}/formation',code=404)
-call('PUT',f'/fuel_consumptions/{rid}/cars/1',{'distance_km':500})
-call('PUT',f'/fuel_consumptions/{rid}/cars/2',{'distance_km':500})
-call('PUT',f'/fuel_consumptions/{rid}',{'route':'Москва — Тверь — Москва','saving_percent':10})
-r=call('PUT',f'/fuel_consumptions/{rid}/formation');check(set(r)==keys and set(r['items'][0])==itemkeys,'stable JSON keys')
-check(r['total_saved_liters']==8.85 and r['calculated_count']==2,'expected total 8.85 L')
-check(r['items'][0]['range_km']==771.6,'tank based range 771.6 km')
-check(r['status']=='formed' and r['formed_at'] is not None,'formation timestamp')
-check(call('GET','/fuel_consumptions/cart')['id'] is None,'cart cleared on formation')
-call('PUT',f'/fuel_consumptions/{rid}',{'route':'changed'},404)
-call('DELETE',f'/fuel_consumptions/{rid}',code=404)
-call('PUT',f'/fuel_consumptions/{rid}/cars/1',{'distance_km':10},404)
-r=call('PUT',f'/fuel_consumptions/{rid}/completion',{'decision':'complete'});check(r['moderator']=='moderator' and r['completed_at'] is not None,'completion assigned server moderator')
-date=r['formed_at'][:10]
-check(any(x['id']==rid for x in call('GET',f'/fuel_consumptions?status=completed&formed_from={date}&formed_to={date}')),'date range inclusive of end day')
-call('PUT',f'/fuel_consumptions/{rid}/completion',{'decision':'reject'},404)
-# Concurrent adds produce one draft, safeguarded by a row lock and partial unique index.
-with concurrent.futures.ThreadPoolExecutor(2) as pool:
- rows=list(pool.map(lambda i:call('POST',f'/fuel_consumptions/draft/cars/{i}',code=201),[1,2]))
-check(rows[0]['id']==rows[1]['id'],'concurrent requests share a single draft')
-rid2=rows[0]['id'];call('DELETE',f'/fuel_consumptions/{rid2}/cars/1')
-check(call('GET','/fuel_consumptions/cart')['count']==1,'remove by composite pair')
-call('DELETE',f'/fuel_consumptions/{rid2}')
-call('GET',f'/fuel_consumptions/{rid2}',code=404)
-# Reject branch.
-r=call('POST','/fuel_consumptions/draft/cars/1',code=201);ri=r['id']
-call('PUT',f'/fuel_consumptions/{ri}/cars/1',{'distance_km':100})
-call('PUT',f'/fuel_consumptions/{ri}',{'route':'Проверка отклонения','saving_percent':0})
-call('PUT',f'/fuel_consumptions/{ri}/formation')
-check(call('PUT',f'/fuel_consumptions/{ri}/completion',{'decision':'reject'})['status']=='rejected','rejection branch')
-login='test_'+uuid.uuid4().hex[:10]
-u=call('POST','/users',{'login':login,'full_name':'Тестовый водитель','password':'DemoPass123'},201)
-check(set(u)=={'id','login','full_name'},'password never returned')
-call('POST','/users',{'login':login,'full_name':'Тест','password':'DemoPass123'},404)
-call('POST','/users/login',{});call('POST','/users/logout',{})
-# Actual multipart upload and verification from MinIO.
-boundary=uuid.uuid4().hex; parts=[]
-for k,v in {'name':'Тестовый автомобиль','description':'','consumption_rate':'8.1','fuel_tank_volume':'55'}.items():
- parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode())
-root=Path(__file__).resolve().parents[1]
-for k,ext,ct in [('image','jpg','image/jpeg'),('video','mp4','video/mp4')]:
- parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"; filename="пример.{ext}"\r\nContent-Type: {ct}\r\n\r\n'.encode()+ (root/f'media/cars_sedan.{ext}').read_bytes()+b'\r\n')
-data=b''.join(parts)+f'--{boundary}--\r\n'.encode()
-req=urllib.request.Request(BASE+'/cars',data=data,headers={'Content-Type':f'multipart/form-data; boundary={boundary}'},method='POST')
-with urllib.request.urlopen(req,timeout=60) as res:
- check(res.status==201,'multipart create');car=json.load(res)
-for k,ext in [('image_url','jpg'),('video_url','mp4')]:
- with urllib.request.urlopen(car[k],timeout=20) as res:
-  check(res.read()==(root/f'media/cars_sedan.{ext}').read_bytes(),f'{k} stored intact in MinIO')
-check(car['description']=='' and 'status' not in car,'empty description included; internal status hidden')
-print(f'TOTAL {checks} checks passed')
+ data=r.read();return r.status,json.loads(data) if data else None,data
+p='/fuel_consumptions'
+s,d,b=call('GET',p+'/draft');check(s==404 and b==b'','no draft initially')
+s,d,b=call('GET',p+'?consumption_min=7&consumption_max=12');check(s==200 and len(d)>=2,'filter');check(all(7<=x['consumption_rate']<=12 for x in d),'inclusive numeric filter');check(all(set(x)==keys and 'status' not in x for x in d),'stable card keys, no status')
+for query in ['consumption_min=x','consumption_min=20&consumption_max=1','consumption_max=NaN']:
+ s,d,b=call('GET',p+'?'+query);check(s==404 and not b,'invalid filter empty404')
+s,d,b=call('GET',p+'/feed');check(s==200 and d['id']==1,'first feed')
+s,d,b=call('GET',p+'/feed?id=1&next=true');check(s==200 and d['id']==2,'next feed')
+s,d,b=call('GET',p+'/feed?id=999999');check(s==404 and not b,'missing feed')
+s,d,b=call('DELETE',p+'/5');check(s==404,'cannot delete other creator')
+boundary='Lab3'+uuid.uuid4().hex
+parts=[]
+parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="name"\r\n\r\nПроверка ЛР3\r\n'.encode())
+media=pathlib.Path(__file__).resolve().parents[1]/'media'
+for field,ext,ct in [('image','jpg','image/jpeg'),('video','mp4','video/mp4')]:
+ parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{field}"; filename="car.{ext}"\r\nContent-Type: {ct}\r\n\r\n'.encode()+(media/f'cars_sedan.{ext}').read_bytes()+b'\r\n')
+parts.append(f'--{boundary}--\r\n'.encode());raw=b''.join(parts);headers={'Content-Type':f'multipart/form-data; boundary={boundary}'}
+s,car,b=call('POST',p,raw=raw,headers=headers);check(s==201,'create multipart draft');i=car['id'];check(set(car)==keys,'draft stable keys');check(car['consumption_rate'] is None and car['fuel_tank_volume'] is None and car['formed_at'] is None,'empty draft numeric fields retained');check(car['is_owner']==1,'owner flag')
+for field,ext in [('image_url','jpg'),('video_url','mp4')]:check(urllib.request.urlopen(car[field]).read()==(media/f'cars_sedan.{ext}').read_bytes(),'actual MinIO bytes '+ext)
+s,d,b=call('GET',p+'/draft');check(s==200 and d['id']==i,'draft without ID')
+s,d,b=call('GET',p+f'/feed?id={i}');check(s==404,'draft hidden from feed')
+s,d,b=call('POST',p,raw=raw,headers=headers);check(s==404,'one draft constraint')
+s,d,b=call('PUT',p+f'/{i}/publication',{'status':'published'});check(s==404 and not b,'system fields rejected')
+s,d,b=call('PUT',p+f'/{i}/publication',{'description':'','consumption_rate':8.4,'fuel_tank_volume':60});check(s==404,'publication requires fields')
+s,d,b=call('PUT',p+f'/{i}/publication',{'description':'Дальняя поездка','consumption_rate':8.4,'fuel_tank_volume':60});check(s==200 and d['formed_at'] is not None,'publish sets date');check(set(d)==keys,'same keys after publication')
+s,d,b=call('GET',p+'/draft');check(s==404,'published card leaves draft')
+s,d,b=call('PUT',p+f'/{i}/publication',{'description':'Повтор','consumption_rate':8.4,'fuel_tank_volume':60});check(s==404,'no repeated publication')
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:results=list(ex.map(lambda _:call('POST',p+f'/{i}/likes',{'liked':1}),range(4)))
+check(all(r[0]==200 for r in results),'concurrent likes succeed')
+s,d,b=call('GET',p+f'/feed?id={i}');check(d['likes_count']==1 and d['liked']==1,'likes unique')
+for _ in range(2):
+ s,d,b=call('POST',p+f'/{i}/likes',{'liked':0});check(s==200 and d['likes_count']==0 and d['liked']==0,'unlike idempotent')
+s,d,b=call('POST',p+f'/{i}/likes',{'liked':2});check(s==404 and not b,'invalid like')
+s,d,b=call('DELETE',p+f'/{i}');check(s==200 and not b,'soft delete empty200')
+s,d,b=call('GET',p+f'/feed?id={i}');check(s==404 and not b,'deleted hidden')
+s,d,b=call('POST',p+f'/{i}/likes',{'liked':1});check(s==404,'deleted cannot be liked')
+login='test_'+uuid.uuid4().hex[:12]
+s,d,b=call('POST','/users',{'login':login,'full_name':'Тест','password':'Lab3Demo123'});check(s==201 and set(d)=={'id','login','full_name'},'register without password/hash')
+s,d,b=call('POST','/users',{'login':login,'full_name':'Тест','password':'Lab3Demo123'});check(s==404 and not b,'duplicate registration')
+for url in ['/users/login','/users/logout']:
+ s,d,b=call('POST',url);check(s==200 and not b,'auth stub')
+print(f'All {checks} HTTP checks passed')

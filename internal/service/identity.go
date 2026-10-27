@@ -1,17 +1,20 @@
 package service
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
-type Identity struct{ CreatorID, ModeratorID uint }
+var ErrInvalid = errors.New("invalid input or transition")
+
+const CurrentUserID uint = 1
+
+type Identity struct{ ID uint }
 
 var once sync.Once
-var identity *Identity
+var current *Identity
 
-const creatorID uint = 1
-const moderatorID uint = 2
-
-// Lab 3 only: fixed identities. Replace with authenticated principals in Lab 4.
 func CurrentUser() *Identity {
-	once.Do(func() { identity = &Identity{CreatorID: creatorID, ModeratorID: moderatorID} })
-	return identity
+	once.Do(func() { current = &Identity{ID: CurrentUserID} })
+	return current
 }

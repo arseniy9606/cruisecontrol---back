@@ -9,53 +9,25 @@
       "value": "http://localhost:8085/api"
     },
     {
-      "key": "request_id",
-      "value": "5"
-    },
-    {
-      "key": "old_draft_id",
-      "value": "4"
+      "key": "car_id",
+      "value": "6"
     }
   ],
   "item": [
     {
-      "name": "01 Список заявок с фильтрами",
+      "name": "01 Список с фильтром",
       "request": {
         "method": "GET",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions?status=completed&formed_from=2026-01-01&formed_to=2026-12-31"
+        "url": "{{base_url}}/fuel_consumptions?consumption_min=7&consumption_max=12"
       }
     },
     {
-      "name": "02 Корзина перед удалением",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions/cart"
-      }
-    },
-    {
-      "name": "03 Удалить прежний черновик",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions/{{old_draft_id}}"
-      }
-    },
-    {
-      "name": "04 Каталог с фильтром расхода",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "{{base_url}}/cars?consumption_min=7&consumption_max=12"
-      }
-    },
-    {
-      "name": "05 Добавить автомобиль с медиа",
+      "name": "02 Добавить автомобиль",
       "request": {
         "method": "POST",
         "header": [],
-        "url": "{{base_url}}/cars",
+        "url": "{{base_url}}/fuel_consumptions",
         "body": {
           "mode": "formdata",
           "formdata": [
@@ -65,40 +37,17 @@
               "type": "text"
             },
             {
-              "key": "description",
-              "value": "Демонстрация загрузки файлов",
-              "type": "text"
-            },
-            {
-              "key": "consumption_rate",
-              "value": "8.4",
-              "type": "text"
-            },
-            {
-              "key": "fuel_tank_volume",
-              "value": "60",
-              "type": "text"
-            },
-            {
               "key": "image",
-              "type": "file",
-              "src": "media/cars_sedan.jpg"
+              "src": "media/cars_sedan.jpg",
+              "type": "file"
             },
             {
               "key": "video",
-              "type": "file",
-              "src": "media/cars_sedan.mp4"
+              "src": "media/cars_sedan.mp4",
+              "type": "file"
             }
           ]
         }
-      }
-    },
-    {
-      "name": "06 Первый автомобиль в заявку",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions/draft/cars/1"
       },
       "event": [
         {
@@ -106,167 +55,90 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "if (pm.response.code === 201) pm.collectionVariables.set(\"request_id\", pm.response.json().id);"
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"car_id\", pm.response.json().id);"
             ]
           }
         }
       ]
     },
     {
-      "name": "07 Второй автомобиль в заявку",
+      "name": "03 Черновик",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fuel_consumptions/draft"
+      }
+    },
+    {
+      "name": "04 Опубликовать",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/fuel_consumptions/{{car_id}}/publication",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Автомобиль для дальних поездок\",\n  \"consumption_rate\": 8.4,\n  \"fuel_tank_volume\": 60\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "05 Лента",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fuel_consumptions/feed"
+      }
+    },
+    {
+      "name": "06 следующего автомобиля",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fuel_consumptions/feed?id=1&next=true"
+      }
+    },
+    {
+      "name": "07 Лайк",
       "request": {
         "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/fuel_consumptions/{{car_id}}/likes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"liked\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "08 Удалить автомобиль",
+      "request": {
+        "method": "DELETE",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions/draft/cars/2"
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "if (pm.response.code === 201) pm.collectionVariables.set(\"request_id\", pm.response.json().id);"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "08 Корзина из двух автомобилей",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions/cart"
+        "url": "{{base_url}}/fuel_consumptions/{{car_id}}"
       }
     },
     {
-      "name": "09 Получить черновик",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}"
-      }
-    },
-    {
-      "name": "10 Расстояние первого автомобиля",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}/cars/1",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"distance_km\": 500\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "11 Расстояние второго автомобиля",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}/cars/2",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"distance_km\": 500\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "12 Изменить поля заявки",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"route\": \"Москва — Тверь — Москва\",\n  \"saving_percent\": 10\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "13 Ошибка завершения черновика",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}/completion",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"decision\": \"complete\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "14 Сформировать и рассчитать",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}/formation"
-      }
-    },
-    {
-      "name": "15 Завершить модератором",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{base_url}}/fuel_consumptions/{{request_id}}/completion",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"decision\": \"complete\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "16 Зарегистрировать пользователя",
+      "name": "09 Регистрация",
       "request": {
         "method": "POST",
         "header": [
@@ -285,14 +157,6 @@
             }
           }
         }
-      }
-    },
-    {
-      "name": "17 Итоговый список заявок",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "{{base_url}}/fuel_consumptions?status=completed&formed_from=2026-01-01&formed_to=2026-12-31"
       }
     }
   ]

@@ -1,99 +1,79 @@
-# Расчёт экономии топлива при использовании круиз контроля
+# Расход топлива автомобилей — круиз-контроль
 
-Учебный проект по курсу «Разработка Интернет Приложений», кафедра ИУ5, МГТУ им. Н. Э. Баумана, 2026. Транспорт, вариант 29.
+Учебный проект РИП, транспорт, вариант 29. Карточки автомобилей содержат расход топлива и объём бака. Лабораторная 3 продолжает каталог, ленту, публикацию и лайки из ЛР1–2.
 
 ## Лабораторные работы
 
-| № | Содержание | Ветка |
+| Работа | Содержание | Ветка |
 |---|---|---|
-| 1 | Шаблонизация и MinIO | [lab1-fuel_consumptions](../../tree/lab1-fuel_consumptions) |
-| 2 | PostgreSQL, GORM и курсор | [lab2-fuel_consumptions](../../tree/lab2-fuel_consumptions) |
-| 3 | REST API и расчёт экономии | [lab3-fuel_consumptions](../../tree/lab3-fuel_consumptions) |
+| ЛР1 | Шаблоны, лента и MinIO | [lab1-fuel_consumptions](../../tree/lab1-fuel_consumptions) |
+| ЛР2 | PostgreSQL и ORM | [lab2-fuel_consumptions](../../tree/lab2-fuel_consumptions) |
+| ЛР3 | REST API, публикация, лайки | [lab3-fuel_consumptions](../../tree/lab3-fuel_consumptions) |
 
-## Лабораторная работа 3
-
-REST API на Go/Gin с PostgreSQL, GORM и MinIO. Шаблонов и HTML-маршрутов нет. Показ выполняется в Postman или Insomnia. Авторизация относится к ЛР4; в ЛР3 фиксированные создатель и модератор выдаются функцией `service.CurrentUser()` с `sync.Once`.
-
-Автомобиль содержит расход `consumption_rate` (л/100 км) и объём бака `fuel_tank_volume` (л). Домен `fuel_consumptions` управляет заявками на расчёт. В составе заявки у каждой машины задаётся расстояние `distance_km`.
-
-## Запуск
+## Запуск и показ
 
 ```sh
 docker compose up -d --build
 ```
 
-API: `http://localhost:8085/api`. Для ЛР3 используются отдельные тома, порт PostgreSQL 55433 и MinIO 9200. Перенос данных из ЛР2 не требуется: миграция создаёт 4 таблицы и начальный каталог. Учебные учётные данные заданы в Compose; они предназначены только для локального показа. Порты опубликованы на 127.0.0.1.
+API: `http://localhost:8085/api`. База PostgreSQL: localhost:55433; MinIO: localhost:9200. Все порты привязаны к 127.0.0.1. Учебные локальные пароли находятся в Compose. Используются отдельные тома ЛР3; базы предыдущих лабораторных не меняются.
 
-Импортируйте `collections/api.postman_collection.json` (16 методов) либо `collections/demo.postman_collection.json` (порядок показа). При загрузке автомобиля выберите `media/cars_sedan.jpg` и `media/cars_sedan.mp4`. Адрес настраивается переменной `base_url`; `request_id` обновляется после добавления автомобиля. Перед удалением прежнего черновика скопируйте его ID из ответа корзины в `old_draft_id`; если корзина пустая, пропустите удаление. Для повторной регистрации используйте новый login.
+Импортируйте `collections/api.postman_collection.json` или `collections/api.insomnia.json`: в коллекции 10 методов. `demo.*` содержит последовательность показа. Для создания выберите файлы `media/cars_sedan.jpg` и `media/cars_sedan.mp4`; после переноса проекта пути файлов в клиенте нужно выбрать заново. `car_id` обновляется после успешного создания. При повторном показе удалите оставшийся черновик и смените login регистрации.
 
-## Методы API
+В ЛР3 нет HTML-шаблонов. Показ выполняется только в Insomnia/Postman. Авторизация — тема ЛР4; login/logout являются заглушками и возвращают 200 с пустым телом. Текущий пользователь задаётся singleton `service.CurrentUser()` с константой ID=1.
 
-| Метод | URL после /api | Действие |
+## HTTP методы
+
+Все адреса начинаются с `/api`.
+
+| Метод | URL | Вход и действие |
 |---|---|---|
-| GET | /cars | Каталог; consumption_min, consumption_max |
-| GET | /cars/:id | Один автомобиль |
-| POST | /cars | multipart/form-data: name, description, consumption_rate, fuel_tank_volume, image, video |
-| POST | /fuel_consumptions/draft/cars/:carID | Добавить машину; автоматически создать черновик |
-| PUT | /fuel_consumptions/:id/cars/:carID | Изменить distance_km |
-| DELETE | /fuel_consumptions/:id/cars/:carID | Удалить машину из черновика |
-| GET | /fuel_consumptions/cart | ID черновика и количество машин |
-| GET | /fuel_consumptions | Список; status, formed_from, formed_to |
-| GET | /fuel_consumptions/:id | Заявка с машинами и медиа |
-| PUT | /fuel_consumptions/:id | route, saving_percent |
-| PUT | /fuel_consumptions/:id/formation | Проверить поля и рассчитать |
-| PUT | /fuel_consumptions/:id/completion | decision: complete или reject |
-| DELETE | /fuel_consumptions/:id | Логически удалить черновик |
-| POST | /users | login, full_name, password |
-| POST | /users/login | Заглушка ЛР4 |
-| POST | /users/logout | Заглушка ЛР4 |
+| GET | /fuel_consumptions | consumption_min, consumption_max: включительный диапазон расхода; только опубликованные |
+| GET | /fuel_consumptions/feed | без id — первая карточка; id=N — карточка; id=N&next=true — следующая с большим id |
+| GET | /fuel_consumptions/draft | единственный черновик текущего пользователя, без ID |
+| POST | /fuel_consumptions | multipart: name, image, video; необязательные description, consumption_rate, fuel_tank_volume; создать черновик |
+| PUT | /fuel_consumptions/:id/publication | JSON: description, consumption_rate, fuel_tank_volume; публикация собственного черновика |
+| DELETE | /fuel_consumptions/:id | логическое удаление собственной карточки |
+| POST | /fuel_consumptions/:id/likes | JSON liked=1 поставить, liked=0 отменить; только опубликованные |
+| POST | /users | JSON login, full_name, password; регистрация |
+| POST | /users/login | заглушка |
+| POST | /users/logout | заглушка |
 
-Диапазон дат задаётся как YYYY-MM-DD, обе границы включены, календарь UTC. Список заявок исключает draft и deleted. Статус заявки — предметное поле, необходимое для фильтрации; он не дублирует HTTP-код. Статус автомобиля из БД в JSON не передаётся.
+Лента выбирает одну запись непосредственно запросом БД (`ORDER BY id LIMIT 1`). После последней карточки — 404. Фильтрация каталога также выполняется в БД.
 
-## Правила и формула
+## Контракт JSON и переходы
 
-Допустимые переходы: draft → formed или deleted; formed → completed или rejected. Остальные переходы возвращают 404 с пустым телом. Ошибки ввода и отсутствующие ресурсы — 404 без сообщения; успешные чтение и изменение — 200, создание — 201. Непредвиденные ошибки инфраструктуры — 500 с пустым телом. Системные поля не входят в DTO ввода, неизвестные поля JSON отклоняются.
+Карточка всегда содержит одинаковые ключи: id, name, description, consumption_rate, fuel_tank_volume, image_url, video_url, creator, created_at, formed_at, is_owner, liked, likes_count. В незаполненном черновике числовые поля и formed_at равны null, description — пустой строке. is_owner и liked имеют значения 0/1. Статус автомобиля остаётся только в БД и не передаётся в JSON.
 
-Для расстояния D, расхода R, объёма бака V и заданного в заявке процента S:
+Переходы: draft → published или deleted; published → deleted. Обратный переход и повторная публикация запрещены. Системные ID, статус, создатель и даты назначает сервер; лишние JSON-поля отклоняются. Создание — 201, успешное чтение/изменение — 200. Ошибки ввода, отсутствующие ресурсы и запрещённые переходы — 404 с пустым телом. Непредвиденная ошибка хранилища — 500 с пустым телом. HTTP-код не дублируется внутри JSON, текстовых сообщений об ошибках нет.
 
-- Расход без круиз-контроля: B = D × R / 100.
-- Расход с круиз-контролем: C = B × (1 − S / 100).
-- Экономия: E = B × S / 100.
-- Запас хода: L = V / (R × (1 − S / 100)) × 100.
+Файлы действительно загружаются в MinIO, получают случайные латинские имена; в БД сохраняются имена, в ответе — URL. Регистрация хранит bcrypt-хеш; пароль и хеш не возвращаются.
 
-S задаётся пользователем в диапазоне 0 ≤ S < 100. Это сценарный параметр, а не универсальная фактическая эффективность круиз-контроля. Результаты округляются до двух знаков; итог заявки — сумма округлённых значений экономии её машин. До формирования результаты равны null, ключи JSON остаются теми же. calculated_count считает строки состава с рассчитанной экономией.
+## Таблицы PostgreSQL
 
-Пример: седан 7,2 л/100 км и внедорожник 10,5 л/100 км, по 500 км, S = 10. Экономия 3,60 + 5,25 = 8,85 л. Запас хода седана с баком 50 л — 771,60 км.
+| Таблица | Поля |
+|---|---|
+| users | id BIGINT PK; login VARCHAR(60) UNIQUE NOT NULL; full_name VARCHAR(120) NOT NULL; password_hash TEXT NOT NULL |
+| cars | id BIGINT PK; name VARCHAR(120) NOT NULL; description TEXT; status TEXT NOT NULL; consumption_rate NUMERIC(7,2); fuel_tank_volume NUMERIC(7,2); image_name TEXT NOT NULL; video_name TEXT NOT NULL; creator_id BIGINT FK users NOT NULL; created_at TIMESTAMPTZ NOT NULL; formed_at TIMESTAMPTZ |
+| car_likes | id BIGINT PK; car_id BIGINT FK cars NOT NULL; user_id BIGINT FK users NOT NULL; UNIQUE(car_id,user_id) |
 
-## Структура
+Частичный уникальный индекс cars(creator_id) WHERE status='draft' гарантирует один черновик на пользователя. Все связи без каскадного удаления. Публикация, удаление и лайки используют транзакции и блокировку строки автомобиля. Повторный like=1 не увеличивает количество, повторный like=0 безопасен.
 
-- `cmd/server` — запуск HTTP-сервера; `cmd/migrate` — миграция и начальные данные.
-- `internal/api` — маршруты, обработчики и DTO сериализации.
-- `internal/model` — User, Car, FuelConsumption, TripCar.
-- `internal/service` — формула и singleton текущего пользователя.
-- `internal/storage` — GORM, миграция, S3-клиент MinIO.
-- `collections` — две коллекции Postman, также импортируются в Insomnia.
+## Структура и проверка
 
-Состав заявки имеет составной ключ (request_id, car_id), отдельного PK связи нет. Транзакции и блокировки защищают изменения заявки; частичный уникальный индекс допускает только один черновик на создателя. Регистрация хранит bcrypt-хеш, пароль и хеш в ответ не включаются. Файлы получают случайные латинские имена, в БД записываются имена, в MinIO — сами файлы.
-
-## Проверка
+`internal/model` — три модели; `internal/api` — маршруты, DTO и обработчики; `internal/service` — singleton; `internal/storage` — ORM и MinIO. `docs/lab3.mdj` содержит все три диаграммы в одном файле StarUML.
 
 ```sh
-docker build --target build -f docker/cars.Dockerfile -t cruisecontrol-lab3-checks .
-docker run --rm cruisecontrol-lab3-checks sh -ec 'go test -v ./... && go vet ./...'
 python3 scripts/check_api.py
-```
-
-HTTP-проверки создают демонстрационные записи и ожидают пустую корзину перед запуском. Для SQL-показа:
-
-```sh
 docker compose exec postgres psql -U student -d fuel_consumptions
 ```
 
+Проверки создают свои карточки, удаляют их логически и ожидают отсутствие черновика перед запуском.
+
 ```sql
-SELECT id, status, creator_id, moderator_id, formed_at, completed_at, total_saved_liters FROM fuel_consumptions ORDER BY id;
-SELECT request_id, car_id, distance_km, saved_liters, range_km FROM trip_cars ORDER BY request_id, car_id;
-SELECT id, name, consumption_rate, fuel_tank_volume, image_name, video_name FROM cars ORDER BY id;
-SELECT id, login, full_name, left(password_hash, 4) AS hash_prefix FROM users ORDER BY id;
+SELECT id,name,status,consumption_rate,fuel_tank_volume,creator_id,created_at,formed_at FROM cars ORDER BY id;
+SELECT id,car_id,user_id FROM car_likes ORDER BY id;
+SELECT id,login,full_name,left(password_hash,4) AS hash_prefix FROM users ORDER BY id;
 ```
 
-[Задание](https://github.com/iu5git/Web#лабораторная-3) · [Методические указания Go](https://github.com/iu5git/Web/tree/main/tutorials/lab3-go).
+[Задание ЛР3](https://github.com/iu5git/Web#лабораторная-3) · [Методичка Go](https://github.com/iu5git/Web/tree/main/tutorials/lab3-go)
