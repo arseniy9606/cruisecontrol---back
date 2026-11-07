@@ -10,22 +10,12 @@
       "scope": "collection"
     },
     {
-      "_id": "env_b8437527e58e41839cdc2ce251bccc6b",
-      "_type": "environment",
-      "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
-      "name": "Base Environment",
-      "data": {
-        "base_url": "http://localhost:8085/api",
-        "car_id": 6
-      }
-    },
-    {
       "_id": "req_df79cad9d55047639281d20698f8b186",
       "_type": "request",
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "01 Список с фильтром",
       "method": "GET",
-      "url": "{{ _.base_url }}/fuel_consumptions?consumption_min=7&consumption_max=12",
+      "url": "http://localhost:8085/api/fuel_consumptions?consumption_min=7&consumption_max=12",
       "headers": [],
       "body": {},
       "metaSortKey": 0
@@ -36,7 +26,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "02 Добавить автомобиль",
       "method": "POST",
-      "url": "{{ _.base_url }}/fuel_consumptions",
+      "url": "http://localhost:8085/api/fuel_consumptions",
       "headers": [],
       "body": {
         "mimeType": "multipart/form-data",
@@ -60,8 +50,7 @@
           }
         ]
       },
-      "metaSortKey": 1000,
-      "afterResponseScript": "if (insomnia.response.code === 201) { insomnia.environment.set(\"car_id\", insomnia.response.json().id); }"
+      "metaSortKey": 1000
     },
     {
       "_id": "req_2fdda203752c42b795d7b9950dd5c8ab",
@@ -69,7 +58,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "03 Черновик",
       "method": "GET",
-      "url": "{{ _.base_url }}/fuel_consumptions/draft",
+      "url": "http://localhost:8085/api/fuel_consumptions/draft",
       "headers": [],
       "body": {},
       "metaSortKey": 2000
@@ -80,7 +69,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "04 Опубликовать",
       "method": "PUT",
-      "url": "{{ _.base_url }}/fuel_consumptions/{{ _.car_id }}/publication",
+      "url": "http://localhost:8085/api/fuel_consumptions/11/publication",
       "headers": [
         {
           "name": "Content-Type",
@@ -99,7 +88,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "05 Лента",
       "method": "GET",
-      "url": "{{ _.base_url }}/fuel_consumptions/feed",
+      "url": "http://localhost:8085/api/fuel_consumptions/feed",
       "headers": [],
       "body": {},
       "metaSortKey": 4000
@@ -110,7 +99,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "06 следующего автомобиля",
       "method": "GET",
-      "url": "{{ _.base_url }}/fuel_consumptions/feed?id=1&next=true",
+      "url": "http://localhost:8085/api/fuel_consumptions/feed?id=1&next=true",
       "headers": [],
       "body": {},
       "metaSortKey": 5000
@@ -121,7 +110,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "07 Лайк",
       "method": "POST",
-      "url": "{{ _.base_url }}/fuel_consumptions/{{ _.car_id }}/likes",
+      "url": "http://localhost:8085/api/fuel_consumptions/11/likes",
       "headers": [
         {
           "name": "Content-Type",
@@ -140,7 +129,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "08 Удалить автомобиль",
       "method": "DELETE",
-      "url": "{{ _.base_url }}/fuel_consumptions/{{ _.car_id }}",
+      "url": "http://localhost:8085/api/fuel_consumptions/11",
       "headers": [],
       "body": {},
       "metaSortKey": 7000
@@ -151,7 +140,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "09 Регистрация",
       "method": "POST",
-      "url": "{{ _.base_url }}/users",
+      "url": "http://localhost:8085/api/users",
       "headers": [
         {
           "name": "Content-Type",

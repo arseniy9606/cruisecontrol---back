@@ -3,23 +3,13 @@
     "name": "ЛР3 API 10 методов",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:8085/api"
-    },
-    {
-      "key": "car_id",
-      "value": "6"
-    }
-  ],
   "item": [
     {
       "name": "01 Список с фильтром",
       "request": {
         "method": "GET",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions?consumption_min=7&consumption_max=12"
+        "url": "http://localhost:8085/api/fuel_consumptions?consumption_min=7&consumption_max=12"
       }
     },
     {
@@ -27,7 +17,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions/feed"
+        "url": "http://localhost:8085/api/fuel_consumptions/feed"
       }
     },
     {
@@ -35,7 +25,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions/draft"
+        "url": "http://localhost:8085/api/fuel_consumptions/draft"
       }
     },
     {
@@ -43,7 +33,7 @@
       "request": {
         "method": "POST",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions",
+        "url": "http://localhost:8085/api/fuel_consumptions",
         "body": {
           "mode": "formdata",
           "formdata": [
@@ -64,18 +54,7 @@
             }
           ]
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "if (pm.response.code === 201) pm.collectionVariables.set(\"car_id\", pm.response.json().id);"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
       "name": "05 Опубликовать",
@@ -87,7 +66,7 @@
             "value": "application/json"
           }
         ],
-        "url": "{{base_url}}/fuel_consumptions/{{car_id}}/publication",
+        "url": "http://localhost:8085/api/fuel_consumptions/11/publication",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"description\": \"Автомобиль для дальних поездок\",\n  \"consumption_rate\": 8.4,\n  \"fuel_tank_volume\": 60\n}",
@@ -104,7 +83,7 @@
       "request": {
         "method": "DELETE",
         "header": [],
-        "url": "{{base_url}}/fuel_consumptions/{{car_id}}"
+        "url": "http://localhost:8085/api/fuel_consumptions/11"
       }
     },
     {
@@ -117,7 +96,7 @@
             "value": "application/json"
           }
         ],
-        "url": "{{base_url}}/fuel_consumptions/{{car_id}}/likes",
+        "url": "http://localhost:8085/api/fuel_consumptions/11/likes",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"liked\": 1\n}",
@@ -139,7 +118,7 @@
             "value": "application/json"
           }
         ],
-        "url": "{{base_url}}/users",
+        "url": "http://localhost:8085/api/users",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"login\": \"student_lab3\",\n  \"full_name\": \"Студент РИП\",\n  \"password\": \"Lab3Demo123\"\n}",
@@ -156,7 +135,7 @@
       "request": {
         "method": "POST",
         "header": [],
-        "url": "{{base_url}}/users/login"
+        "url": "http://localhost:8085/api/users/login"
       }
     },
     {
@@ -164,7 +143,7 @@
       "request": {
         "method": "POST",
         "header": [],
-        "url": "{{base_url}}/users/logout"
+        "url": "http://localhost:8085/api/users/logout"
       }
     }
   ]
