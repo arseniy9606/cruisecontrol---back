@@ -9816,7 +9816,7 @@
                       "top": 319,
                       "width": 211,
                       "height": 14,
-                      "text": "ID: uint",
+                      "text": "Key: []byte",
                       "horizontalAlignment": 0
                     },
                     {
@@ -9835,7 +9835,7 @@
                       "top": 335,
                       "width": 211,
                       "height": 14,
-                      "text": "CurrentUserID: const uint = 1",
+                      "text": "TTL: time.Duration",
                       "horizontalAlignment": 0
                     },
                     {
@@ -9854,7 +9854,7 @@
                       "top": 351,
                       "width": 211,
                       "height": 14,
-                      "text": "once: sync.Once",
+                      "text": "Redis: *redis.Client",
                       "horizontalAlignment": 0
                     }
                   ],
@@ -9892,7 +9892,7 @@
                       "top": 375,
                       "width": 211,
                       "height": 14,
-                      "text": "Parse(): *auth.Claims, error",
+                      "text": "Parse(raw: string): *auth.Claims, error",
                       "horizontalAlignment": 0
                     }
                   ],
@@ -10857,6 +10857,16 @@
               },
               "name": "Parse",
               "parameters": [
+                {
+                  "_type": "UMLParameter",
+                  "_id": "f870f5626e7a4933a9f85d7e15bad821",
+                  "_parent": {
+                    "$ref": "775a59eee6194f0686fcfce1027b90a5"
+                  },
+                  "name": "raw",
+                  "type": "string",
+                  "direction": "in"
+                },
                 {
                   "_type": "UMLParameter",
                   "_id": "585d1d3003af4467b29310cb09dd5732",
