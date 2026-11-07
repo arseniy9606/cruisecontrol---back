@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/arseniy9606/cruisecontrol---back/internal/model"
-	"github.com/arseniy9606/cruisecontrol---back/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -13,6 +12,17 @@ import (
 )
 
 func validNumber(v float64) bool { return v > 0 && v <= 99999 && !math.IsNaN(v) && !math.IsInf(v, 0) }
+
+// Feed godoc
+// @Summary Лента автомобилей
+// @Tags Автомобили
+// @Produce json
+// @Param id query int false "ID автомобиля"
+// @Param next query bool false "Следующий автомобиль"
+// @Success 200 {object} CarDTO
+// @Failure 404
+// @Failure 500
+// @Router /fuel_consumptions/feed [get]
 func (s *Server) Feed(c *gin.Context) {
 	q := s.DB.Where("status = ?", "published")
 	raw, hasID := c.GetQuery("id")
@@ -43,14 +53,41 @@ func (s *Server) Feed(c *gin.Context) {
 	}
 	s.respondCar(c, car, 200)
 }
+
+// GetDraft godoc
+// @Summary Черновик текущего водителя
+// @Tags Автомобили
+// @Produce json
+// @Success 200 {object} CarDTO
+// @Failure 404
+// @Failure 500
+// @Security BearerAuth
+// @Failure 403
+// @Failure 503
+// @Router /fuel_consumptions/draft [get]
 func (s *Server) GetDraft(c *gin.Context) {
 	var car model.Car
-	if e := s.DB.Where("status = ? AND creator_id = ?", "draft", service.CurrentUser().ID).First(&car).Error; e != nil {
+	if e := s.DB.Where("status = ? AND creator_id = ?", "draft", currentUserID(c)).First(&car).Error; e != nil {
 		fail(c, e)
 		return
 	}
 	s.respondCar(c, car, 200)
 }
+
+// PublishCar godoc
+// @Summary Опубликовать свой черновик
+// @Tags Автомобили
+// @Produce json
+// @Accept json
+// @Param body body PublicationRequest true "Поля публикации"
+// @Param id path int true "ID автомобиля"
+// @Success 200 {object} CarDTO
+// @Failure 404
+// @Failure 500
+// @Security BearerAuth
+// @Failure 403
+// @Failure 503
+// @Router /fuel_consumptions/{id}/publication [put]
 func (s *Server) PublishCar(c *gin.Context) {
 	i, ok := id(c, "id")
 	if !ok {
@@ -70,7 +107,7 @@ func (s *Server) PublishCar(c *gin.Context) {
 	}
 	var car model.Car
 	e := s.DB.Transaction(func(tx *gorm.DB) error {
-		if e := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND creator_id = ? AND status = ?", i, service.CurrentUser().ID, "draft").First(&car).Error; e != nil {
+		if e := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND creator_id = ? AND status = ?", i, currentUserID(c), "draft").First(&car).Error; e != nil {
 			return e
 		}
 		return tx.Model(&car).Updates(map[string]any{"description": b.Description, "consumption_rate": b.ConsumptionRate, "fuel_tank_volume": b.FuelTankVolume, "status": "published", "formed_at": time.Now().UTC()}).Error
@@ -81,6 +118,19 @@ func (s *Server) PublishCar(c *gin.Context) {
 	}
 	s.respondCar(c, car, 200)
 }
+
+// DeleteCar godoc
+// @Summary Удалить свой автомобиль
+// @Tags Автомобили
+// @Produce json
+// @Param id path int true "ID автомобиля"
+// @Success 200
+// @Failure 404
+// @Failure 500
+// @Security BearerAuth
+// @Failure 403
+// @Failure 503
+// @Router /fuel_consumptions/{id} [delete]
 func (s *Server) DeleteCar(c *gin.Context) {
 	i, ok := id(c, "id")
 	if !ok {
@@ -94,7 +144,7 @@ func (s *Server) DeleteCar(c *gin.Context) {
 	}
 	e := s.DB.Transaction(func(tx *gorm.DB) error {
 		var car model.Car
-		if e := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND creator_id = ? AND status <> ?", i, service.CurrentUser().ID, "deleted").First(&car).Error; e != nil {
+		if e := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND creator_id = ? AND status <> ?", i, currentUserID(c), "deleted").First(&car).Error; e != nil {
 			return e
 		}
 		return tx.Model(&car).Update("status", "deleted").Error
@@ -105,6 +155,21 @@ func (s *Server) DeleteCar(c *gin.Context) {
 	}
 	c.Status(200)
 }
+
+// LikeCar godoc
+// @Summary Поставить или убрать лайк
+// @Tags Автомобили
+// @Produce json
+// @Accept json
+// @Param body body LikeRequest true "0 отменяет, 1 ставит лайк"
+// @Param id path int true "ID автомобиля"
+// @Success 200 {object} CarDTO
+// @Failure 404
+// @Failure 500
+// @Security BearerAuth
+// @Failure 403
+// @Failure 503
+// @Router /fuel_consumptions/{id}/likes [post]
 func (s *Server) LikeCar(c *gin.Context) {
 	i, ok := id(c, "id")
 	if !ok {
@@ -126,9 +191,9 @@ func (s *Server) LikeCar(c *gin.Context) {
 			return e
 		}
 		if *b.Liked == 0 {
-			return tx.Where("car_id = ? AND user_id = ?", i, service.CurrentUser().ID).Delete(&model.CarLike{}).Error
+			return tx.Where("car_id = ? AND user_id = ?", i, currentUserID(c)).Delete(&model.CarLike{}).Error
 		}
-		like := model.CarLike{CarID: i, UserID: service.CurrentUser().ID}
+		like := model.CarLike{CarID: i, UserID: currentUserID(c)}
 		return tx.Clauses(clause.OnConflict{DoNothing: true}).Create(&like).Error
 	})
 	if e != nil {

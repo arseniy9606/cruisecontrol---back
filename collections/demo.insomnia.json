@@ -6,7 +6,7 @@
     {
       "_id": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "_type": "workspace",
-      "name": "ЛР3 Порядок показа",
+      "name": "ЛР4 Порядок показа",
       "scope": "collection"
     },
     {
@@ -15,7 +15,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "01 Список с фильтром",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions?consumption_min=7&consumption_max=12",
+      "url": "http://localhost:8086/api/fuel_consumptions?consumption_min=7&consumption_max=12",
       "headers": [],
       "body": {},
       "metaSortKey": 0
@@ -26,14 +26,19 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "02 Добавить автомобиль",
       "method": "POST",
-      "url": "http://localhost:8085/api/fuel_consumptions",
-      "headers": [],
+      "url": "http://localhost:8086/api/fuel_consumptions",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {
         "mimeType": "multipart/form-data",
         "params": [
           {
             "name": "name",
-            "value": "Автомобиль ЛР3",
+            "value": "Автомобиль ЛР4",
             "type": "text"
           },
           {
@@ -58,8 +63,13 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "03 Черновик",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions/draft",
-      "headers": [],
+      "url": "http://localhost:8086/api/fuel_consumptions/draft",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {},
       "metaSortKey": 2000
     },
@@ -69,11 +79,15 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "04 Опубликовать",
       "method": "PUT",
-      "url": "http://localhost:8085/api/fuel_consumptions/11/publication",
+      "url": "http://localhost:8086/api/fuel_consumptions/11/publication",
       "headers": [
         {
           "name": "Content-Type",
           "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
         }
       ],
       "body": {
@@ -88,7 +102,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "05 Лента",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions/feed",
+      "url": "http://localhost:8086/api/fuel_consumptions/feed",
       "headers": [],
       "body": {},
       "metaSortKey": 4000
@@ -99,7 +113,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "06 следующего автомобиля",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions/feed?id=1&next=true",
+      "url": "http://localhost:8086/api/fuel_consumptions/feed?id=1&next=true",
       "headers": [],
       "body": {},
       "metaSortKey": 5000
@@ -110,11 +124,15 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "07 Лайк",
       "method": "POST",
-      "url": "http://localhost:8085/api/fuel_consumptions/11/likes",
+      "url": "http://localhost:8086/api/fuel_consumptions/11/likes",
       "headers": [
         {
           "name": "Content-Type",
           "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
         }
       ],
       "body": {
@@ -129,8 +147,13 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "08 Удалить автомобиль",
       "method": "DELETE",
-      "url": "http://localhost:8085/api/fuel_consumptions/11",
-      "headers": [],
+      "url": "http://localhost:8086/api/fuel_consumptions/11",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {},
       "metaSortKey": 7000
     },
@@ -140,7 +163,7 @@
       "parentId": "wrk_fd80972ccbbd4365b34cd9cd29e186cc",
       "name": "09 Регистрация",
       "method": "POST",
-      "url": "http://localhost:8085/api/users",
+      "url": "http://localhost:8086/api/users",
       "headers": [
         {
           "name": "Content-Type",

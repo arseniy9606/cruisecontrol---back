@@ -1,0 +1,397 @@
+basePath: /api
+definitions:
+  api.CarDTO:
+    properties:
+      consumption_rate:
+        type: number
+      created_at:
+        type: string
+      creator:
+        type: string
+      description:
+        type: string
+      formed_at:
+        type: string
+      fuel_tank_volume:
+        type: number
+      id:
+        type: integer
+      image_url:
+        type: string
+      is_owner:
+        type: integer
+      liked:
+        type: integer
+      likes_count:
+        type: integer
+      name:
+        type: string
+      video_url:
+        type: string
+    type: object
+  api.LikeRequest:
+    properties:
+      liked:
+        enum:
+        - 0
+        - 1
+        type: integer
+    type: object
+  api.LoginRequest:
+    properties:
+      login:
+        example: creator
+        type: string
+      password:
+        example: Lab4Demo123
+        type: string
+    type: object
+  api.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      token_type:
+        type: string
+    type: object
+  api.PublicationRequest:
+    properties:
+      consumption_rate:
+        type: number
+      description:
+        type: string
+      fuel_tank_volume:
+        type: number
+    type: object
+  api.RegisterRequest:
+    properties:
+      full_name:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  api.UserResponse:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: integer
+      login:
+        type: string
+    type: object
+host: localhost:8086
+info:
+  contact: {}
+  description: Автомобили, публикация, лайки. JWT + Redis blacklist.
+  title: 'Расход топлива: API ЛР4'
+  version: "4.0"
+paths:
+  /fuel_consumptions:
+    get:
+      parameters:
+      - description: Минимальный расход
+        in: query
+        name: consumption_min
+        type: number
+      - description: Максимальный расход
+        in: query
+        name: consumption_max
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.CarDTO'
+            type: array
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Список автомобилей с фильтром
+      tags:
+      - Автомобили
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: description
+        in: formData
+        name: description
+        type: string
+      - description: consumption_rate
+        in: formData
+        name: consumption_rate
+        type: number
+      - description: fuel_tank_volume
+        in: formData
+        name: fuel_tank_volume
+        type: number
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: video
+        in: formData
+        name: video
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.CarDTO'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      summary: Создать черновик с фото и видео
+      tags:
+      - Автомобили
+  /fuel_consumptions/{id}:
+    delete:
+      parameters:
+      - description: ID автомобиля
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      summary: Удалить свой автомобиль
+      tags:
+      - Автомобили
+  /fuel_consumptions/{id}/likes:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 0 отменяет, 1 ставит лайк
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.LikeRequest'
+      - description: ID автомобиля
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CarDTO'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      summary: Поставить или убрать лайк
+      tags:
+      - Автомобили
+  /fuel_consumptions/{id}/publication:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Поля публикации
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.PublicationRequest'
+      - description: ID автомобиля
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CarDTO'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      summary: Опубликовать свой черновик
+      tags:
+      - Автомобили
+  /fuel_consumptions/draft:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CarDTO'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      summary: Черновик текущего водителя
+      tags:
+      - Автомобили
+  /fuel_consumptions/feed:
+    get:
+      parameters:
+      - description: ID автомобиля
+        in: query
+        name: id
+        type: integer
+      - description: Следующий автомобиль
+        in: query
+        name: next
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CarDTO'
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Лента автомобилей
+      tags:
+      - Автомобили
+  /users:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Новый водитель
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.UserResponse'
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Регистрация водителя
+      tags:
+      - Водители
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Учётные данные
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.LoginResponse'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Вход по логину и паролю
+      tags:
+      - Водители
+  /users/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      summary: 'Выход: отзыв JWT в Redis'
+      tags:
+      - Водители
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    description: Введите Bearer и JWT из POST /api/users/login.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

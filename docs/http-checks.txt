@@ -1,0 +1,67 @@
+PASS 01 guest identity
+PASS 02 guest forbidden GET /fuel_consumptions/draft
+PASS 03 guest forbidden POST /fuel_consumptions
+PASS 04 guest forbidden PUT /fuel_consumptions/1/publication
+PASS 05 guest forbidden DELETE /fuel_consumptions/1
+PASS 06 guest forbidden POST /fuel_consumptions/1/likes
+PASS 07 guest forbidden POST /users/logout
+PASS 08 wrong password
+PASS 09 login JWT
+PASS 10 no draft initially
+PASS 11 filter
+PASS 12 inclusive numeric filter
+PASS 13 stable card keys, no status
+PASS 14 invalid filter empty404
+PASS 15 invalid filter empty404
+PASS 16 invalid filter empty404
+PASS 17 first feed
+PASS 18 next feed
+PASS 19 missing feed
+PASS 20 cannot delete other creator
+PASS 21 create multipart draft
+PASS 22 draft stable keys
+PASS 23 empty draft numeric fields retained
+PASS 24 owner flag
+PASS 25 actual MinIO bytes jpg
+PASS 26 actual MinIO bytes mp4
+PASS 27 draft without ID
+PASS 28 draft hidden from feed
+PASS 29 one draft constraint
+PASS 30 system fields rejected
+PASS 31 publication requires fields
+PASS 32 publish sets date
+PASS 33 same keys after publication
+PASS 34 published card leaves draft
+PASS 35 no repeated publication
+PASS 36 concurrent likes succeed
+PASS 37 likes unique
+PASS 38 unlike idempotent
+PASS 39 unlike idempotent
+PASS 40 invalid like
+PASS 41 soft delete empty200
+PASS 42 deleted hidden
+PASS 43 deleted cannot be liked
+PASS 44 register without password/hash
+PASS 45 duplicate registration
+PASS 46 new user login
+PASS 47 new driver does not own creator cars
+PASS 48 cannot delete another driver car
+PASS 49 creator from JWT
+PASS 50 draft isolated by identity
+PASS 51 cannot publish another driver draft
+PASS 52 owner deletes draft
+PASS 53 like from new identity
+PASS 54 likes isolated
+PASS 55 clean new user like
+PASS 56 separate jti per login
+PASS 57 logout stores blacklist
+PASS 58 revoked token rejected
+PASS 59 revoked token public read
+PASS 60 second login still active
+PASS 61 invalid token public read
+PASS 62 invalid token private forbidden
+PASS 63 guest feed
+PASS 64 Swagger documents 10 methods
+PASS 65 Swagger bearer header
+PASS 66 Swagger locks creation
+All 66 HTTP checks passed

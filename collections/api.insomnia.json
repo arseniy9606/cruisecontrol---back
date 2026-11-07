@@ -6,7 +6,7 @@
     {
       "_id": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "_type": "workspace",
-      "name": "ЛР3 API 10 методов",
+      "name": "ЛР4 API 10 методов",
       "scope": "collection"
     },
     {
@@ -15,7 +15,7 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "01 Список с фильтром",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions?consumption_min=7&consumption_max=12",
+      "url": "http://localhost:8086/api/fuel_consumptions?consumption_min=7&consumption_max=12",
       "headers": [],
       "body": {},
       "metaSortKey": 0
@@ -26,7 +26,7 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "02 Лента",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions/feed",
+      "url": "http://localhost:8086/api/fuel_consumptions/feed",
       "headers": [],
       "body": {},
       "metaSortKey": 1000
@@ -37,8 +37,13 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "03 Черновик",
       "method": "GET",
-      "url": "http://localhost:8085/api/fuel_consumptions/draft",
-      "headers": [],
+      "url": "http://localhost:8086/api/fuel_consumptions/draft",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {},
       "metaSortKey": 2000
     },
@@ -48,14 +53,19 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "04 Добавить автомобиль",
       "method": "POST",
-      "url": "http://localhost:8085/api/fuel_consumptions",
-      "headers": [],
+      "url": "http://localhost:8086/api/fuel_consumptions",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {
         "mimeType": "multipart/form-data",
         "params": [
           {
             "name": "name",
-            "value": "Автомобиль ЛР3",
+            "value": "Автомобиль ЛР4",
             "type": "text"
           },
           {
@@ -80,11 +90,15 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "05 Опубликовать",
       "method": "PUT",
-      "url": "http://localhost:8085/api/fuel_consumptions/11/publication",
+      "url": "http://localhost:8086/api/fuel_consumptions/11/publication",
       "headers": [
         {
           "name": "Content-Type",
           "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
         }
       ],
       "body": {
@@ -99,8 +113,13 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "06 Удалить автомобиль",
       "method": "DELETE",
-      "url": "http://localhost:8085/api/fuel_consumptions/11",
-      "headers": [],
+      "url": "http://localhost:8086/api/fuel_consumptions/11",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {},
       "metaSortKey": 5000
     },
@@ -110,11 +129,15 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "07 Лайк",
       "method": "POST",
-      "url": "http://localhost:8085/api/fuel_consumptions/11/likes",
+      "url": "http://localhost:8086/api/fuel_consumptions/11/likes",
       "headers": [
         {
           "name": "Content-Type",
           "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
         }
       ],
       "body": {
@@ -129,7 +152,7 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "08 Регистрация",
       "method": "POST",
-      "url": "http://localhost:8085/api/users",
+      "url": "http://localhost:8086/api/users",
       "headers": [
         {
           "name": "Content-Type",
@@ -148,9 +171,17 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "09 Вход — заглушка",
       "method": "POST",
-      "url": "http://localhost:8085/api/users/login",
-      "headers": [],
-      "body": {},
+      "url": "http://localhost:8086/api/users/login",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\"login\": \"creator\", \"password\": \"Lab4Demo123\"}"
+      },
       "metaSortKey": 8000
     },
     {
@@ -159,8 +190,13 @@
       "parentId": "wrk_a31bb6ca67d14914816dec9e2386a122",
       "name": "10 Выход — заглушка",
       "method": "POST",
-      "url": "http://localhost:8085/api/users/logout",
-      "headers": [],
+      "url": "http://localhost:8086/api/users/logout",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_JWT_HERE"
+        }
+      ],
       "body": {},
       "metaSortKey": 9000
     }

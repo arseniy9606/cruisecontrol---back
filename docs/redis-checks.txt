@@ -1,0 +1,3 @@
+PASS blacklist: user_id=1, TTL=1799
+PASS blacklist survives Redis restart
+PASS Redis outage: private=503, public=200, login=503

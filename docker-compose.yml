@@ -1,18 +1,30 @@
-name: cruisecontrol-lab3
+name: cruisecontrol-lab4
 x-env: &env
-  DATABASE_URL: postgres://student:lab3_password@postgres:5432/fuel_consumptions?sslmode=disable
+  REDIS_ADDR: redis:6379
+  JWT_SECRET: ${JWT_SECRET:?Copy .env.example to .env and generate JWT_SECRET}
+  JWT_TTL: ${JWT_TTL:-30m}
+  DATABASE_URL: postgres://student:lab4_password@postgres:5432/fuel_consumptions?sslmode=disable
   MINIO_ENDPOINT: minio:9000
-  MINIO_ACCESS_KEY: lab3_root
-  MINIO_SECRET_KEY: lab3_media_password
-  MEDIA_PUBLIC_URL: http://localhost:9200/cars
+  MINIO_ACCESS_KEY: lab4_root
+  MINIO_SECRET_KEY: lab4_media_password
+  MEDIA_PUBLIC_URL: http://localhost:9300/cars
 services:
+  redis:
+    image: redis:7.4-bookworm
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "always"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
   postgres:
     image: postgres:16.10-bookworm
     environment:
       POSTGRES_USER: student
-      POSTGRES_PASSWORD: lab3_password
+      POSTGRES_PASSWORD: lab4_password
       POSTGRES_DB: fuel_consumptions
-    ports: ["127.0.0.1:55433:5432"]
+    ports: ["127.0.0.1:55434:5432"]
     volumes: ["postgres-catalog-data:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U student -d fuel_consumptions"]
@@ -26,10 +38,10 @@ services:
       dockerfile: docker/minio.Dockerfile
       target: minio
     environment:
-      MINIO_ROOT_USER: lab3_root
-      MINIO_ROOT_PASSWORD: lab3_media_password
+      MINIO_ROOT_USER: lab4_root
+      MINIO_ROOT_PASSWORD: lab4_media_password
     command: server /data --console-address ":9001"
-    ports: ["127.0.0.1:9200:9000", "127.0.0.1:9201:9001"]
+    ports: ["127.0.0.1:9300:9000", "127.0.0.1:9301:9001"]
     volumes: ["media-data:/data"]
   media-init:
     image: fuel_consumptions-mc:lab1
@@ -43,12 +55,12 @@ services:
     command:
       - -ec
       - |
-        until mc alias set lab3 http://minio:9000 lab3_root lab3_media_password; do sleep 1; done
-        mc mb --ignore-existing lab3/cars
-        mc anonymous set download lab3/cars
-        mc cp /media/*.jpg /media/*.mp4 lab3/cars/
+        until mc alias set lab4 http://minio:9000 lab4_root lab4_media_password; do sleep 1; done
+        mc mb --ignore-existing lab4/cars
+        mc anonymous set download lab4/cars
+        mc cp /media/*.jpg /media/*.mp4 lab4/cars/
   migrate:
-    image: cruisecontrol:lab3
+    image: cruisecontrol:lab4
     build:
       context: .
       dockerfile: docker/cars.Dockerfile
@@ -57,15 +69,17 @@ services:
     depends_on:
       postgres: {condition: service_healthy}
   api:
-    image: cruisecontrol:lab3
+    image: cruisecontrol:lab4
     build:
       context: .
       dockerfile: docker/cars.Dockerfile
     environment: *env
-    ports: ["127.0.0.1:8085:8080"]
+    ports: ["127.0.0.1:8086:8080"]
     depends_on:
+      redis: {condition: service_healthy}
       migrate: {condition: service_completed_successfully}
       media-init: {condition: service_completed_successfully}
 volumes:
+  redis-data:
   postgres-catalog-data:
   media-data:

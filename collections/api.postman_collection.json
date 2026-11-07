@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "ЛР3 API 10 методов",
+    "name": "ЛР4 API 10 методов",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -9,7 +9,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "http://localhost:8085/api/fuel_consumptions?consumption_min=7&consumption_max=12"
+        "url": "http://localhost:8086/api/fuel_consumptions?consumption_min=7&consumption_max=12"
       }
     },
     {
@@ -17,29 +17,39 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "http://localhost:8085/api/fuel_consumptions/feed"
+        "url": "http://localhost:8086/api/fuel_consumptions/feed"
       }
     },
     {
       "name": "03 Черновик",
       "request": {
         "method": "GET",
-        "header": [],
-        "url": "http://localhost:8085/api/fuel_consumptions/draft"
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer PASTE_JWT_HERE"
+          }
+        ],
+        "url": "http://localhost:8086/api/fuel_consumptions/draft"
       }
     },
     {
       "name": "04 Добавить автомобиль",
       "request": {
         "method": "POST",
-        "header": [],
-        "url": "http://localhost:8085/api/fuel_consumptions",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer PASTE_JWT_HERE"
+          }
+        ],
+        "url": "http://localhost:8086/api/fuel_consumptions",
         "body": {
           "mode": "formdata",
           "formdata": [
             {
               "key": "name",
-              "value": "Автомобиль ЛР3",
+              "value": "Автомобиль ЛР4",
               "type": "text"
             },
             {
@@ -64,9 +74,13 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer PASTE_JWT_HERE"
           }
         ],
-        "url": "http://localhost:8085/api/fuel_consumptions/11/publication",
+        "url": "http://localhost:8086/api/fuel_consumptions/11/publication",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"description\": \"Автомобиль для дальних поездок\",\n  \"consumption_rate\": 8.4,\n  \"fuel_tank_volume\": 60\n}",
@@ -82,8 +96,13 @@
       "name": "06 Удалить автомобиль",
       "request": {
         "method": "DELETE",
-        "header": [],
-        "url": "http://localhost:8085/api/fuel_consumptions/11"
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer PASTE_JWT_HERE"
+          }
+        ],
+        "url": "http://localhost:8086/api/fuel_consumptions/11"
       }
     },
     {
@@ -94,9 +113,13 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer PASTE_JWT_HERE"
           }
         ],
-        "url": "http://localhost:8085/api/fuel_consumptions/11/likes",
+        "url": "http://localhost:8086/api/fuel_consumptions/11/likes",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"liked\": 1\n}",
@@ -118,7 +141,7 @@
             "value": "application/json"
           }
         ],
-        "url": "http://localhost:8085/api/users",
+        "url": "http://localhost:8086/api/users",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"login\": \"student_lab3\",\n  \"full_name\": \"Студент РИП\",\n  \"password\": \"Lab3Demo123\"\n}",
@@ -134,16 +157,35 @@
       "name": "09 Вход — заглушка",
       "request": {
         "method": "POST",
-        "header": [],
-        "url": "http://localhost:8085/api/users/login"
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "http://localhost:8086/api/users/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"login\": \"creator\", \"password\": \"Lab4Demo123\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
       }
     },
     {
       "name": "10 Выход — заглушка",
       "request": {
         "method": "POST",
-        "header": [],
-        "url": "http://localhost:8085/api/users/logout"
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer PASTE_JWT_HERE"
+          }
+        ],
+        "url": "http://localhost:8086/api/users/logout"
       }
     }
   ]

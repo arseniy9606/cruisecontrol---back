@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+// Register godoc
+// @Summary Регистрация водителя
+// @Tags Водители
+// @Produce json
+// @Accept json
+// @Param body body RegisterRequest true "Новый водитель"
+// @Success 201 {object} UserResponse
+// @Failure 404
+// @Failure 500
+// @Router /users [post]
 func (s *Server) Register(c *gin.Context) {
 	var b struct {
 		Login    string `json:"login"`
@@ -34,6 +44,3 @@ func (s *Server) Register(c *gin.Context) {
 	}
 	c.JSON(201, gin.H{"id": u.ID, "login": u.Login, "full_name": u.FullName})
 }
-
-// Required placeholders: these do not authenticate or issue tokens.
-func (s *Server) AuthStub(c *gin.Context) { c.Status(200) }

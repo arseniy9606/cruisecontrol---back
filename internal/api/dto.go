@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/arseniy9606/cruisecontrol---back/internal/model"
-	"github.com/arseniy9606/cruisecontrol---back/internal/service"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -24,16 +23,16 @@ type CarDTO struct {
 	LikesCount      int64      `json:"likes_count"`
 }
 
-func (s *Server) carDTO(car model.Car) (CarDTO, error) {
+func (s *Server) carDTO(c *gin.Context, car model.Car) (CarDTO, error) {
 	d := CarDTO{ID: car.ID, Name: car.Name, Description: car.Description, ConsumptionRate: car.ConsumptionRate, FuelTankVolume: car.FuelTankVolume, ImageURL: s.Media.URL(car.ImageName), VideoURL: s.Media.URL(car.VideoName), Creator: car.Creator.Login, CreatedAt: car.CreatedAt, FormedAt: car.FormedAt}
-	if car.CreatorID == service.CurrentUser().ID {
+	if car.CreatorID == currentUserID(c) {
 		d.IsOwner = 1
 	}
 	if e := s.DB.Model(&model.CarLike{}).Where("car_id = ?", car.ID).Count(&d.LikesCount).Error; e != nil {
 		return d, e
 	}
 	var count int64
-	e := s.DB.Model(&model.CarLike{}).Where("car_id = ? AND user_id = ?", car.ID, service.CurrentUser().ID).Count(&count).Error
+	e := s.DB.Model(&model.CarLike{}).Where("car_id = ? AND user_id = ?", car.ID, currentUserID(c)).Count(&count).Error
 	if count > 0 {
 		d.Liked = 1
 	}
@@ -44,7 +43,7 @@ func (s *Server) respondCar(c *gin.Context, car model.Car, code int) {
 		fail(c, e)
 		return
 	}
-	d, e := s.carDTO(car)
+	d, e := s.carDTO(c, car)
 	if e != nil {
 		fail(c, e)
 		return

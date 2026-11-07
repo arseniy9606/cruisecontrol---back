@@ -2,6 +2,7 @@ package storage
 
 import (
 	"github.com/arseniy9606/cruisecontrol---back/internal/model"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
@@ -14,8 +15,12 @@ func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(&model.User{}, &model.Car{}, &model.CarLike{})
 }
 func Seed(db *gorm.DB) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte("Lab4Demo123"), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
 	return db.Transaction(func(tx *gorm.DB) error {
-		for _, u := range []model.User{{ID: 1, Login: "creator", FullName: "Водитель", PasswordHash: "!disabled"}, {ID: 2, Login: "moderator", FullName: "Другой водитель", PasswordHash: "!disabled"}} {
+		for _, u := range []model.User{{ID: 1, Login: "creator", FullName: "Водитель", PasswordHash: string(hash)}, {ID: 2, Login: "moderator", FullName: "Другой водитель", PasswordHash: string(hash)}} {
 			if err := tx.Where("id = ?", u.ID).FirstOrCreate(&u).Error; err != nil {
 				return err
 			}

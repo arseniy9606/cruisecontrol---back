@@ -12,6 +12,16 @@ import (
 	"strings"
 )
 
+// ListCars godoc
+// @Summary Список автомобилей с фильтром
+// @Tags Автомобили
+// @Produce json
+// @Param consumption_min query number false "Минимальный расход"
+// @Param consumption_max query number false "Максимальный расход"
+// @Success 200 {array} CarDTO
+// @Failure 404
+// @Failure 500
+// @Router /fuel_consumptions [get]
 func (s *Server) ListCars(c *gin.Context) {
 	q := s.DB.Preload("Creator").Where("status = ?", "published")
 	min, max := 0.0, math.MaxFloat64
@@ -40,7 +50,7 @@ func (s *Server) ListCars(c *gin.Context) {
 	}
 	out := []CarDTO{}
 	for _, x := range cars {
-		dto, e := s.carDTO(x)
+		dto, e := s.carDTO(c, x)
 		if e != nil {
 			fail(c, e)
 			return
@@ -49,6 +59,25 @@ func (s *Server) ListCars(c *gin.Context) {
 	}
 	c.JSON(200, out)
 }
+
+// CreateCar godoc
+// @Summary Создать черновик с фото и видео
+// @Tags Автомобили
+// @Produce json
+// @Accept multipart/form-data
+// @Param name formData string true "name"
+// @Param description formData string false "description"
+// @Param consumption_rate formData number false "consumption_rate"
+// @Param fuel_tank_volume formData number false "fuel_tank_volume"
+// @Param image formData file true "image"
+// @Param video formData file true "video"
+// @Success 201 {object} CarDTO
+// @Failure 404
+// @Failure 500
+// @Security BearerAuth
+// @Failure 403
+// @Failure 503
+// @Router /fuel_consumptions [post]
 func (s *Server) CreateCar(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 32<<20)
 	if e := c.Request.ParseMultipartForm(2 << 20); e != nil {
@@ -86,7 +115,7 @@ func (s *Server) CreateCar(c *gin.Context) {
 			*dst = &v
 		}
 	}
-	car := model.Car{Name: name, Description: desc, Status: "draft", ConsumptionRate: rate, FuelTankVolume: tank, CreatorID: service.CurrentUser().ID}
+	car := model.Car{Name: name, Description: desc, Status: "draft", ConsumptionRate: rate, FuelTankVolume: tank, CreatorID: currentUserID(c)}
 	success := false
 	defer func() {
 		if !success {

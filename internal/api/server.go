@@ -3,9 +3,14 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	_ "github.com/arseniy9606/cruisecontrol---back/docs"
+	"github.com/arseniy9606/cruisecontrol---back/internal/auth"
 	"github.com/arseniy9606/cruisecontrol---back/internal/service"
 	"github.com/arseniy9606/cruisecontrol---back/internal/storage"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 	"io"
 	"log"
@@ -14,27 +19,31 @@ import (
 )
 
 type Server struct {
+	Auth  *auth.Manager
 	DB    *gorm.DB
 	Media *storage.Media
 }
 
 func (s *Server) Router() *gin.Engine {
+	binding.EnableDecoderDisallowUnknownFields = true
 	r := gin.New()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Use(gin.Recovery())
 	r.HandleMethodNotAllowed = true
 	r.NoRoute(func(c *gin.Context) { c.Status(404) })
 	r.NoMethod(func(c *gin.Context) { c.Status(404) })
 	a := r.Group("/api")
+	a.Use(s.identify)
 	a.GET("/fuel_consumptions", s.ListCars)
 	a.GET("/fuel_consumptions/feed", s.Feed)
-	a.GET("/fuel_consumptions/draft", s.GetDraft)
-	a.POST("/fuel_consumptions", s.CreateCar)
-	a.PUT("/fuel_consumptions/:id/publication", s.PublishCar)
-	a.DELETE("/fuel_consumptions/:id", s.DeleteCar)
-	a.POST("/fuel_consumptions/:id/likes", s.LikeCar)
+	a.GET("/fuel_consumptions/draft", requireUser, s.GetDraft)
+	a.POST("/fuel_consumptions", requireUser, s.CreateCar)
+	a.PUT("/fuel_consumptions/:id/publication", requireUser, s.PublishCar)
+	a.DELETE("/fuel_consumptions/:id", requireUser, s.DeleteCar)
+	a.POST("/fuel_consumptions/:id/likes", requireUser, s.LikeCar)
 	a.POST("/users", s.Register)
-	a.POST("/users/login", s.AuthStub)
-	a.POST("/users/logout", s.AuthStub)
+	a.POST("/users/login", s.Login)
+	a.POST("/users/logout", requireUser, s.Logout)
 	return r
 }
 func fail(c *gin.Context, err error) {

@@ -1,9 +1,9 @@
 {
   "_type": "Project",
   "_id": "2a000fae49844d969f3b4e6e90e97b2c",
-  "name": "ЛР3 Каталог расхода топлива",
+  "name": "ЛР4 Расход топлива: JWT и Redis",
   "author": "arseniy9606",
-  "version": "3.0",
+  "version": "4.0",
   "ownedElements": [
     {
       "_type": "UMLModel",
@@ -8612,7 +8612,7 @@
           "_parent": {
             "$ref": "2f711639a1a54103b3721c49941a13b0"
           },
-          "name": "service.Identity",
+          "name": "auth.Manager",
           "ownedElements": [],
           "operations": [
             {
@@ -8621,7 +8621,7 @@
               "_parent": {
                 "$ref": "4dba0707e7ea4cb8a6aece07b802a795"
               },
-              "name": "CurrentUser",
+              "name": "Parse",
               "visibility": "public",
               "parameters": [
                 {
@@ -8631,7 +8631,7 @@
                     "$ref": "775a59eee6194f0686fcfce1027b90a5"
                   },
                   "name": "",
-                  "type": "*Identity",
+                  "type": "*auth.Claims, error",
                   "direction": "return"
                 }
               ]
@@ -8644,8 +8644,8 @@
               "_parent": {
                 "$ref": "4dba0707e7ea4cb8a6aece07b802a795"
               },
-              "name": "ID",
-              "type": "uint",
+              "name": "Key",
+              "type": "[]byte",
               "visibility": "public"
             },
             {
@@ -8654,8 +8654,8 @@
               "_parent": {
                 "$ref": "4dba0707e7ea4cb8a6aece07b802a795"
               },
-              "name": "CurrentUserID",
-              "type": "const uint = 1",
+              "name": "TTL",
+              "type": "time.Duration",
               "visibility": "public"
             },
             {
@@ -8664,8 +8664,8 @@
               "_parent": {
                 "$ref": "4dba0707e7ea4cb8a6aece07b802a795"
               },
-              "name": "once",
-              "type": "sync.Once",
+              "name": "Redis",
+              "type": "*redis.Client",
               "visibility": "public"
             }
           ]
@@ -8697,6 +8697,2572 @@
           "target": {
             "$ref": "33b32279b0d04af89144e8f4af71fa72"
           }
+        },
+        {
+          "_type": "UMLInteraction",
+          "_id": "9d1c3d0c8a9a46588175728e9f12bd79",
+          "_parent": {
+            "$ref": "2f711639a1a54103b3721c49941a13b0"
+          },
+          "name": "Бизнес-процесс с авторизацией",
+          "participants": [
+            {
+              "_type": "UMLLifeline",
+              "_id": "0bc3bd7684da421699b230dd029dbf3d",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "Клиент",
+              "represent": {
+                "$ref": "4a9b9cbf73b24a3781e458a56cf7e94a"
+              }
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "4661cef3c0fb4d029768b3f0fec5c016",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "Домен users",
+              "represent": {
+                "$ref": "55a0abbf750a421dbec2869739166936"
+              }
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "7c4d406408dc450ba1dc52942c9c8740",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "Домен fuel_consumptions",
+              "represent": {
+                "$ref": "6cb2d86908be422692b743c54e6f0dda"
+              }
+            }
+          ],
+          "messages": [
+            {
+              "_type": "UMLMessage",
+              "_id": "a9578c5a051c454b87082e907a26e382",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+              },
+              "messageSort": "synchCall",
+              "arguments": "login=creator, password",
+              "signature": {
+                "$ref": "447249f582d94b4a84101480ed7053f3"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "bb9843b163814f38826274998ce05ac4",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: access_token, token_type, expires_in",
+              "source": {
+                "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "1de88fde650a48b2b7561951239c0cbd",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "consumption_min=7, consumption_max=12; Bearer JWT",
+              "signature": {
+                "$ref": "8bb3a78a1f8344daa9ef51edf5f29f60"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "b82b5685626d4218abc6338f5b43bc09",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: CarDTO[]",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "85155aa7594c4ef9a10cbf1149975b00",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "name, image.jpg, video.mp4; Bearer JWT",
+              "signature": {
+                "$ref": "4630811ef0c14a35891955ba071d3459"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "1f24b7a8d8784b7e9f3fe5b53d749c6b",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "201: CarDTO(id=11)",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "d705ea9392ed475e8f8da8f6502c61a8",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "Bearer JWT",
+              "signature": {
+                "$ref": "16429c90486246099d527b85f57368d3"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "4d602e1971124f0ba1c14207408f7fda",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: CarDTO(id=11, formed_at=null)",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "e7bca3e5776c499fbb9360fd7c60d613",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "id=11, description, consumption_rate=8.4, fuel_tank_volume=60; Bearer JWT",
+              "signature": {
+                "$ref": "80074360f17a47fb90778237af18b98e"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "e7061e1cc1a04f00aae52977cc40ad15",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: CarDTO(formed_at)",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "e198f8dcda134659a9644cb3dad64d19",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "Bearer JWT",
+              "signature": {
+                "$ref": "a7c979a371dc49a78668d2bb1ef2adbb"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "97ea78d65b08465d833ae3d4d2e54ab8",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: CarDTO",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "dc0450b3e1ff44c084ec9684ec36f017",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "id=1, next=true; Bearer JWT",
+              "signature": {
+                "$ref": "a7c979a371dc49a78668d2bb1ef2adbb"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "bf2176fe925448e49bf35e03eea724bd",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: CarDTO(id=2)",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "a8a056fa9eb44276b2ab8e5f65c84cdb",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "messageSort": "synchCall",
+              "arguments": "id=2, liked=1; Bearer JWT",
+              "signature": {
+                "$ref": "61bfd8d1ac46422c8c8f05e0fc2d5c68"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "3c9955ea19394ace94f1d841fb152f6c",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: CarDTO(liked=1, likes_count)",
+              "source": {
+                "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "e85d59ffe5414c2f8151fcc590f3ab67",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "",
+              "source": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "target": {
+                "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+              },
+              "messageSort": "synchCall",
+              "arguments": "Bearer JWT",
+              "signature": {
+                "$ref": "c74c3ebc6a1843da823506c82b9a563b"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "073a294962e740dabb4acc98dfb208dc",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "200: JWT отозван",
+              "source": {
+                "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+              },
+              "target": {
+                "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+              },
+              "messageSort": "reply",
+              "arguments": ""
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLSequenceDiagram",
+              "_id": "f7a98e991155490b8681892d56821041",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "ЛР4 Последовательность HTTP",
+              "ownedViews": [
+                {
+                  "_type": "UMLSeqLifelineView",
+                  "_id": "91eeb37491a24d5f83f7096469efa4a0",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+                  },
+                  "left": 70,
+                  "top": 30,
+                  "width": 230,
+                  "height": 2000,
+                  "subViews": [
+                    {
+                      "_type": "UMLNameCompartmentView",
+                      "_id": "a787c87fb8ab454dbbbed49330707cec",
+                      "_parent": {
+                        "$ref": "91eeb37491a24d5f83f7096469efa4a0"
+                      },
+                      "model": {
+                        "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+                      },
+                      "parentStyle": true,
+                      "subViews": [
+                        {
+                          "_type": "LabelView",
+                          "_id": "fb02c1b1c4604ae39ea3ac329153a820",
+                          "_parent": {
+                            "$ref": "a787c87fb8ab454dbbbed49330707cec"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "c86e88bd648842bd8487ddef8b476055",
+                          "_parent": {
+                            "$ref": "a787c87fb8ab454dbbbed49330707cec"
+                          },
+                          "text": "Клиент",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "7209e3ab05b74601aa5cfccb12ce452f",
+                          "_parent": {
+                            "$ref": "a787c87fb8ab454dbbbed49330707cec"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "c34458e5c606441ebaec994fb83ff724",
+                          "_parent": {
+                            "$ref": "a787c87fb8ab454dbbbed49330707cec"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        }
+                      ],
+                      "stereotypeLabel": {
+                        "$ref": "fb02c1b1c4604ae39ea3ac329153a820"
+                      },
+                      "nameLabel": {
+                        "$ref": "c86e88bd648842bd8487ddef8b476055"
+                      },
+                      "namespaceLabel": {
+                        "$ref": "7209e3ab05b74601aa5cfccb12ce452f"
+                      },
+                      "propertyLabel": {
+                        "$ref": "c34458e5c606441ebaec994fb83ff724"
+                      }
+                    },
+                    {
+                      "_type": "UMLLinePartView",
+                      "_id": "000353e12cfc4410b8fbe30b21883ec7",
+                      "_parent": {
+                        "$ref": "91eeb37491a24d5f83f7096469efa4a0"
+                      },
+                      "model": {
+                        "$ref": "0bc3bd7684da421699b230dd029dbf3d"
+                      },
+                      "left": 185,
+                      "top": 90,
+                      "width": 1,
+                      "height": 1930,
+                      "parentStyle": true
+                    }
+                  ],
+                  "font": "Arial;15;0",
+                  "showType": false,
+                  "nameCompartment": {
+                    "$ref": "a787c87fb8ab454dbbbed49330707cec"
+                  },
+                  "linePart": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  }
+                },
+                {
+                  "_type": "UMLSeqLifelineView",
+                  "_id": "d8bd0280b5294bbfa0733d368320577a",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+                  },
+                  "left": 640,
+                  "top": 30,
+                  "width": 230,
+                  "height": 2000,
+                  "subViews": [
+                    {
+                      "_type": "UMLNameCompartmentView",
+                      "_id": "30d6d2e24fc0430baeac740a4fbab8ed",
+                      "_parent": {
+                        "$ref": "d8bd0280b5294bbfa0733d368320577a"
+                      },
+                      "model": {
+                        "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+                      },
+                      "parentStyle": true,
+                      "subViews": [
+                        {
+                          "_type": "LabelView",
+                          "_id": "ef4bfb360fbf46b7a94a00e96c9c956b",
+                          "_parent": {
+                            "$ref": "30d6d2e24fc0430baeac740a4fbab8ed"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "7dfdb900ba5e439d9ac87294db4b2b1f",
+                          "_parent": {
+                            "$ref": "30d6d2e24fc0430baeac740a4fbab8ed"
+                          },
+                          "text": "Домен users",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "102e843dd8a74134b51907686d967d8a",
+                          "_parent": {
+                            "$ref": "30d6d2e24fc0430baeac740a4fbab8ed"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "0700bea351fb4ccdab05d2826c4997b8",
+                          "_parent": {
+                            "$ref": "30d6d2e24fc0430baeac740a4fbab8ed"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        }
+                      ],
+                      "stereotypeLabel": {
+                        "$ref": "ef4bfb360fbf46b7a94a00e96c9c956b"
+                      },
+                      "nameLabel": {
+                        "$ref": "7dfdb900ba5e439d9ac87294db4b2b1f"
+                      },
+                      "namespaceLabel": {
+                        "$ref": "102e843dd8a74134b51907686d967d8a"
+                      },
+                      "propertyLabel": {
+                        "$ref": "0700bea351fb4ccdab05d2826c4997b8"
+                      }
+                    },
+                    {
+                      "_type": "UMLLinePartView",
+                      "_id": "0c6fde0f987c435b9ffe51a0dc3902b6",
+                      "_parent": {
+                        "$ref": "d8bd0280b5294bbfa0733d368320577a"
+                      },
+                      "model": {
+                        "$ref": "4661cef3c0fb4d029768b3f0fec5c016"
+                      },
+                      "left": 755,
+                      "top": 90,
+                      "width": 1,
+                      "height": 1930,
+                      "parentStyle": true
+                    }
+                  ],
+                  "font": "Arial;15;0",
+                  "showType": false,
+                  "nameCompartment": {
+                    "$ref": "30d6d2e24fc0430baeac740a4fbab8ed"
+                  },
+                  "linePart": {
+                    "$ref": "0c6fde0f987c435b9ffe51a0dc3902b6"
+                  }
+                },
+                {
+                  "_type": "UMLSeqLifelineView",
+                  "_id": "6cb01a9946494f789fd154c8bb058622",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+                  },
+                  "left": 1230,
+                  "top": 30,
+                  "width": 230,
+                  "height": 2000,
+                  "subViews": [
+                    {
+                      "_type": "UMLNameCompartmentView",
+                      "_id": "c6d75d53a9744342a8fc6d6906f13e75",
+                      "_parent": {
+                        "$ref": "6cb01a9946494f789fd154c8bb058622"
+                      },
+                      "model": {
+                        "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+                      },
+                      "parentStyle": true,
+                      "subViews": [
+                        {
+                          "_type": "LabelView",
+                          "_id": "28796948876649e097b9f02d2da0ecc4",
+                          "_parent": {
+                            "$ref": "c6d75d53a9744342a8fc6d6906f13e75"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "9f50ea2b63c84aeaa08bd14e75107d9c",
+                          "_parent": {
+                            "$ref": "c6d75d53a9744342a8fc6d6906f13e75"
+                          },
+                          "text": "Домен fuel_consumptions",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "29fb2bddab0143a192c426f7b93e4526",
+                          "_parent": {
+                            "$ref": "c6d75d53a9744342a8fc6d6906f13e75"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        },
+                        {
+                          "_type": "LabelView",
+                          "_id": "7705f854db1c4308860ff6353a5e8f92",
+                          "_parent": {
+                            "$ref": "c6d75d53a9744342a8fc6d6906f13e75"
+                          },
+                          "text": "",
+                          "font": "Arial;15;1",
+                          "horizontalAlignment": 2,
+                          "parentStyle": true
+                        }
+                      ],
+                      "stereotypeLabel": {
+                        "$ref": "28796948876649e097b9f02d2da0ecc4"
+                      },
+                      "nameLabel": {
+                        "$ref": "9f50ea2b63c84aeaa08bd14e75107d9c"
+                      },
+                      "namespaceLabel": {
+                        "$ref": "29fb2bddab0143a192c426f7b93e4526"
+                      },
+                      "propertyLabel": {
+                        "$ref": "7705f854db1c4308860ff6353a5e8f92"
+                      }
+                    },
+                    {
+                      "_type": "UMLLinePartView",
+                      "_id": "7526fd64e1f343238b1f21eaa5534943",
+                      "_parent": {
+                        "$ref": "6cb01a9946494f789fd154c8bb058622"
+                      },
+                      "model": {
+                        "$ref": "7c4d406408dc450ba1dc52942c9c8740"
+                      },
+                      "left": 1345,
+                      "top": 90,
+                      "width": 1,
+                      "height": 1930,
+                      "parentStyle": true
+                    }
+                  ],
+                  "font": "Arial;15;0",
+                  "showType": false,
+                  "nameCompartment": {
+                    "$ref": "c6d75d53a9744342a8fc6d6906f13e75"
+                  },
+                  "linePart": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "2fdc25ef6e074ce5be8f960dfab99a0c",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "a9578c5a051c454b87082e907a26e382"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "0c6fde0f987c435b9ffe51a0dc3902b6"
+                  },
+                  "points": "185:150;755:150",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "94f4e41d671c418ca126d051dd0c1615",
+                      "_parent": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "model": {
+                        "$ref": "a9578c5a051c454b87082e907a26e382"
+                      },
+                      "hostEdge": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/users/login(login=creator, password)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "3b800b869901468098c74c567161de47",
+                      "_parent": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "model": {
+                        "$ref": "a9578c5a051c454b87082e907a26e382"
+                      },
+                      "hostEdge": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/users/login(login=creator, password)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "8c0e356428584bc0979ab91c65673037",
+                      "_parent": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "model": {
+                        "$ref": "a9578c5a051c454b87082e907a26e382"
+                      },
+                      "hostEdge": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/users/login(login=creator, password)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "9de1a68ba6b4410a961626062bdfcf97",
+                      "_parent": {
+                        "$ref": "2fdc25ef6e074ce5be8f960dfab99a0c"
+                      },
+                      "model": {
+                        "$ref": "a9578c5a051c454b87082e907a26e382"
+                      },
+                      "left": 748,
+                      "top": 150,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "94f4e41d671c418ca126d051dd0c1615"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "3b800b869901468098c74c567161de47"
+                  },
+                  "propertyLabel": {
+                    "$ref": "8c0e356428584bc0979ab91c65673037"
+                  },
+                  "activation": {
+                    "$ref": "9de1a68ba6b4410a961626062bdfcf97"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "bc3da1cae4884d54bb3f01b6edfe5248",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "bb9843b163814f38826274998ce05ac4"
+                  },
+                  "tail": {
+                    "$ref": "0c6fde0f987c435b9ffe51a0dc3902b6"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "755:245;185:245",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "4cb21cc3a05a4207af3714da73a1d839",
+                      "_parent": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "model": {
+                        "$ref": "bb9843b163814f38826274998ce05ac4"
+                      },
+                      "hostEdge": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: access_token, token_type, expires_in()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "99863566bfda4f859a3e5050871dc6d8",
+                      "_parent": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "model": {
+                        "$ref": "bb9843b163814f38826274998ce05ac4"
+                      },
+                      "hostEdge": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: access_token, token_type, expires_in()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "d27f115f81724d428510e71d7404096a",
+                      "_parent": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "model": {
+                        "$ref": "bb9843b163814f38826274998ce05ac4"
+                      },
+                      "hostEdge": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: access_token, token_type, expires_in()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "94ec0def74e2471d86ff58850682eda8",
+                      "_parent": {
+                        "$ref": "bc3da1cae4884d54bb3f01b6edfe5248"
+                      },
+                      "model": {
+                        "$ref": "bb9843b163814f38826274998ce05ac4"
+                      },
+                      "left": 178,
+                      "top": 245,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "4cb21cc3a05a4207af3714da73a1d839"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "99863566bfda4f859a3e5050871dc6d8"
+                  },
+                  "propertyLabel": {
+                    "$ref": "d27f115f81724d428510e71d7404096a"
+                  },
+                  "activation": {
+                    "$ref": "94ec0def74e2471d86ff58850682eda8"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "5a507b8d64b14373a41a6c8d36991041",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "1de88fde650a48b2b7561951239c0cbd"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:340;1345:340",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "59d3e712b16642c3822832eadf399f3f",
+                      "_parent": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "model": {
+                        "$ref": "1de88fde650a48b2b7561951239c0cbd"
+                      },
+                      "hostEdge": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions(consumption_min=7, consumption_max=12; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "3e4b0808e68b48ca80c2be7e6139765c",
+                      "_parent": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "model": {
+                        "$ref": "1de88fde650a48b2b7561951239c0cbd"
+                      },
+                      "hostEdge": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions(consumption_min=7, consumption_max=12; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "d8e8dc9e183d42648bdcdd8f83a3938f",
+                      "_parent": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "model": {
+                        "$ref": "1de88fde650a48b2b7561951239c0cbd"
+                      },
+                      "hostEdge": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions(consumption_min=7, consumption_max=12; Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "d2c9349ebb3649038ebc0d9cb71311e1",
+                      "_parent": {
+                        "$ref": "5a507b8d64b14373a41a6c8d36991041"
+                      },
+                      "model": {
+                        "$ref": "1de88fde650a48b2b7561951239c0cbd"
+                      },
+                      "left": 1338,
+                      "top": 340,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "59d3e712b16642c3822832eadf399f3f"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "3e4b0808e68b48ca80c2be7e6139765c"
+                  },
+                  "propertyLabel": {
+                    "$ref": "d8e8dc9e183d42648bdcdd8f83a3938f"
+                  },
+                  "activation": {
+                    "$ref": "d2c9349ebb3649038ebc0d9cb71311e1"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "ccd8b226d2164f948d31ba094d7b3f54",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "b82b5685626d4218abc6338f5b43bc09"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:435;185:435",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "393c2e35cd7e48c091903634aae19fe2",
+                      "_parent": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "model": {
+                        "$ref": "b82b5685626d4218abc6338f5b43bc09"
+                      },
+                      "hostEdge": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO[]()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "8eddd13f551445fd9dfd25f4573246f8",
+                      "_parent": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "model": {
+                        "$ref": "b82b5685626d4218abc6338f5b43bc09"
+                      },
+                      "hostEdge": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO[]()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "66ee2eb0075e4fc29a321c999ab38bba",
+                      "_parent": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "model": {
+                        "$ref": "b82b5685626d4218abc6338f5b43bc09"
+                      },
+                      "hostEdge": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO[]()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "9f997fc938d04625a6d55c8e2a000770",
+                      "_parent": {
+                        "$ref": "ccd8b226d2164f948d31ba094d7b3f54"
+                      },
+                      "model": {
+                        "$ref": "b82b5685626d4218abc6338f5b43bc09"
+                      },
+                      "left": 178,
+                      "top": 435,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "393c2e35cd7e48c091903634aae19fe2"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "8eddd13f551445fd9dfd25f4573246f8"
+                  },
+                  "propertyLabel": {
+                    "$ref": "66ee2eb0075e4fc29a321c999ab38bba"
+                  },
+                  "activation": {
+                    "$ref": "9f997fc938d04625a6d55c8e2a000770"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "3a66bbece48f4830ad224a4e718e1489",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "85155aa7594c4ef9a10cbf1149975b00"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:530;1345:530",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "a0e1e3f80f764efd8f9a85a7821551fa",
+                      "_parent": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "model": {
+                        "$ref": "85155aa7594c4ef9a10cbf1149975b00"
+                      },
+                      "hostEdge": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/fuel_consumptions(name, image.jpg, video.mp4; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "c41ee6ed660042c888141dbfa88159de",
+                      "_parent": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "model": {
+                        "$ref": "85155aa7594c4ef9a10cbf1149975b00"
+                      },
+                      "hostEdge": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/fuel_consumptions(name, image.jpg, video.mp4; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "c2918f42ab2742448eb2b1e105f26baf",
+                      "_parent": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "model": {
+                        "$ref": "85155aa7594c4ef9a10cbf1149975b00"
+                      },
+                      "hostEdge": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/fuel_consumptions(name, image.jpg, video.mp4; Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "cf31909689fd4735bf4b445c88208ed9",
+                      "_parent": {
+                        "$ref": "3a66bbece48f4830ad224a4e718e1489"
+                      },
+                      "model": {
+                        "$ref": "85155aa7594c4ef9a10cbf1149975b00"
+                      },
+                      "left": 1338,
+                      "top": 530,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "a0e1e3f80f764efd8f9a85a7821551fa"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "c41ee6ed660042c888141dbfa88159de"
+                  },
+                  "propertyLabel": {
+                    "$ref": "c2918f42ab2742448eb2b1e105f26baf"
+                  },
+                  "activation": {
+                    "$ref": "cf31909689fd4735bf4b445c88208ed9"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "6eb3b5941ad14a89808ee27addd14d7b",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "1f24b7a8d8784b7e9f3fe5b53d749c6b"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:625;185:625",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "bb0f5014f6024f6e83e033ab3fcfaefd",
+                      "_parent": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "model": {
+                        "$ref": "1f24b7a8d8784b7e9f3fe5b53d749c6b"
+                      },
+                      "hostEdge": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "201: CarDTO(id=11)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "b7ffb79af2714fab870cdda0ffb6519f",
+                      "_parent": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "model": {
+                        "$ref": "1f24b7a8d8784b7e9f3fe5b53d749c6b"
+                      },
+                      "hostEdge": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "201: CarDTO(id=11)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "6ba35dab1719480ea3c2ebce21271fbf",
+                      "_parent": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "model": {
+                        "$ref": "1f24b7a8d8784b7e9f3fe5b53d749c6b"
+                      },
+                      "hostEdge": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "201: CarDTO(id=11)()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "12579259690f46a5aef0268ff7639f23",
+                      "_parent": {
+                        "$ref": "6eb3b5941ad14a89808ee27addd14d7b"
+                      },
+                      "model": {
+                        "$ref": "1f24b7a8d8784b7e9f3fe5b53d749c6b"
+                      },
+                      "left": 178,
+                      "top": 625,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "bb0f5014f6024f6e83e033ab3fcfaefd"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "b7ffb79af2714fab870cdda0ffb6519f"
+                  },
+                  "propertyLabel": {
+                    "$ref": "6ba35dab1719480ea3c2ebce21271fbf"
+                  },
+                  "activation": {
+                    "$ref": "12579259690f46a5aef0268ff7639f23"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "c07e95ac77ac4f42b7766060156a5866",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "d705ea9392ed475e8f8da8f6502c61a8"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:720;1345:720",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "b9aae6aafffe41f3b461ca2414704fd8",
+                      "_parent": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "model": {
+                        "$ref": "d705ea9392ed475e8f8da8f6502c61a8"
+                      },
+                      "hostEdge": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/draft(Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "4a7f61dc5ec74ef2872ca6a24d7461d7",
+                      "_parent": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "model": {
+                        "$ref": "d705ea9392ed475e8f8da8f6502c61a8"
+                      },
+                      "hostEdge": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/draft(Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "e1084e43bd5b428cac53623dfcefb1a3",
+                      "_parent": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "model": {
+                        "$ref": "d705ea9392ed475e8f8da8f6502c61a8"
+                      },
+                      "hostEdge": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/draft(Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "1e271a4485f44e7abff6ec3338203857",
+                      "_parent": {
+                        "$ref": "c07e95ac77ac4f42b7766060156a5866"
+                      },
+                      "model": {
+                        "$ref": "d705ea9392ed475e8f8da8f6502c61a8"
+                      },
+                      "left": 1338,
+                      "top": 720,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "b9aae6aafffe41f3b461ca2414704fd8"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "4a7f61dc5ec74ef2872ca6a24d7461d7"
+                  },
+                  "propertyLabel": {
+                    "$ref": "e1084e43bd5b428cac53623dfcefb1a3"
+                  },
+                  "activation": {
+                    "$ref": "1e271a4485f44e7abff6ec3338203857"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "f633bec3e09a4a0098650487a4d68484",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "4d602e1971124f0ba1c14207408f7fda"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:815;185:815",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "9d52dc63288b4af2a9a1daf68f12eee0",
+                      "_parent": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "model": {
+                        "$ref": "4d602e1971124f0ba1c14207408f7fda"
+                      },
+                      "hostEdge": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(id=11, formed_at=null)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "5e0d30f2fb484a27aa70da53313e7130",
+                      "_parent": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "model": {
+                        "$ref": "4d602e1971124f0ba1c14207408f7fda"
+                      },
+                      "hostEdge": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(id=11, formed_at=null)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "75711bd9adfc4dfbab749d74207e45fa",
+                      "_parent": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "model": {
+                        "$ref": "4d602e1971124f0ba1c14207408f7fda"
+                      },
+                      "hostEdge": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(id=11, formed_at=null)()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "9158da7137e148ff966a073d45d74721",
+                      "_parent": {
+                        "$ref": "f633bec3e09a4a0098650487a4d68484"
+                      },
+                      "model": {
+                        "$ref": "4d602e1971124f0ba1c14207408f7fda"
+                      },
+                      "left": 178,
+                      "top": 815,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "9d52dc63288b4af2a9a1daf68f12eee0"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "5e0d30f2fb484a27aa70da53313e7130"
+                  },
+                  "propertyLabel": {
+                    "$ref": "75711bd9adfc4dfbab749d74207e45fa"
+                  },
+                  "activation": {
+                    "$ref": "9158da7137e148ff966a073d45d74721"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "58e453829788457ca54495ec208af7ac",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "e7bca3e5776c499fbb9360fd7c60d613"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:910;1345:910",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "73f1abc849a847f7bd6dfb3553028d2a",
+                      "_parent": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "model": {
+                        "$ref": "e7bca3e5776c499fbb9360fd7c60d613"
+                      },
+                      "hostEdge": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "PUT /api/fuel_consumptions/:id/publication(id=11, description, consumption_rate=8.4, fuel_tank_volume=60; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "25ea8bf41ac44a859bf3ae3f427898d1",
+                      "_parent": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "model": {
+                        "$ref": "e7bca3e5776c499fbb9360fd7c60d613"
+                      },
+                      "hostEdge": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "PUT /api/fuel_consumptions/:id/publication(id=11, description, consumption_rate=8.4, fuel_tank_volume=60; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "5608b80923b24021b16cb2272c9ad53f",
+                      "_parent": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "model": {
+                        "$ref": "e7bca3e5776c499fbb9360fd7c60d613"
+                      },
+                      "hostEdge": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "PUT /api/fuel_consumptions/:id/publication(id=11, description, consumption_rate=8.4, fuel_tank_volume=60; Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "e5a58b3cf628440c87111816c2819905",
+                      "_parent": {
+                        "$ref": "58e453829788457ca54495ec208af7ac"
+                      },
+                      "model": {
+                        "$ref": "e7bca3e5776c499fbb9360fd7c60d613"
+                      },
+                      "left": 1338,
+                      "top": 910,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "73f1abc849a847f7bd6dfb3553028d2a"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "25ea8bf41ac44a859bf3ae3f427898d1"
+                  },
+                  "propertyLabel": {
+                    "$ref": "5608b80923b24021b16cb2272c9ad53f"
+                  },
+                  "activation": {
+                    "$ref": "e5a58b3cf628440c87111816c2819905"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "88fbade2db2b4570a0c9bd3c73394dd7",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "e7061e1cc1a04f00aae52977cc40ad15"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:1005;185:1005",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "ca5aced7b5a3456cb096103b8afb8386",
+                      "_parent": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "model": {
+                        "$ref": "e7061e1cc1a04f00aae52977cc40ad15"
+                      },
+                      "hostEdge": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(formed_at)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "8a2641774a004ad2bca0c48c807eff57",
+                      "_parent": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "model": {
+                        "$ref": "e7061e1cc1a04f00aae52977cc40ad15"
+                      },
+                      "hostEdge": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(formed_at)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "ab8398a5f09c434e89895568ef7cee81",
+                      "_parent": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "model": {
+                        "$ref": "e7061e1cc1a04f00aae52977cc40ad15"
+                      },
+                      "hostEdge": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(formed_at)()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "20e161176eb74f629da51bea58b95fbb",
+                      "_parent": {
+                        "$ref": "88fbade2db2b4570a0c9bd3c73394dd7"
+                      },
+                      "model": {
+                        "$ref": "e7061e1cc1a04f00aae52977cc40ad15"
+                      },
+                      "left": 178,
+                      "top": 1005,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "ca5aced7b5a3456cb096103b8afb8386"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "8a2641774a004ad2bca0c48c807eff57"
+                  },
+                  "propertyLabel": {
+                    "$ref": "ab8398a5f09c434e89895568ef7cee81"
+                  },
+                  "activation": {
+                    "$ref": "20e161176eb74f629da51bea58b95fbb"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "355b94053eb44e3496079497ef9fb5b5",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "e198f8dcda134659a9644cb3dad64d19"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:1100;1345:1100",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "1f112fe2a08648ec98c6e451a6e39a9c",
+                      "_parent": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "model": {
+                        "$ref": "e198f8dcda134659a9644cb3dad64d19"
+                      },
+                      "hostEdge": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/feed(Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "a01331177a3b44219c3215a0b5cf4eca",
+                      "_parent": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "model": {
+                        "$ref": "e198f8dcda134659a9644cb3dad64d19"
+                      },
+                      "hostEdge": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/feed(Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "1b5fbe78517f4bb8b2d36e5998fc2bd2",
+                      "_parent": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "model": {
+                        "$ref": "e198f8dcda134659a9644cb3dad64d19"
+                      },
+                      "hostEdge": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/feed(Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "bd90b73aa49b4a29a4300f1c11cd9bfd",
+                      "_parent": {
+                        "$ref": "355b94053eb44e3496079497ef9fb5b5"
+                      },
+                      "model": {
+                        "$ref": "e198f8dcda134659a9644cb3dad64d19"
+                      },
+                      "left": 1338,
+                      "top": 1100,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "1f112fe2a08648ec98c6e451a6e39a9c"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "a01331177a3b44219c3215a0b5cf4eca"
+                  },
+                  "propertyLabel": {
+                    "$ref": "1b5fbe78517f4bb8b2d36e5998fc2bd2"
+                  },
+                  "activation": {
+                    "$ref": "bd90b73aa49b4a29a4300f1c11cd9bfd"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "899165d59063477395c3886991560ef4",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "97ea78d65b08465d833ae3d4d2e54ab8"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:1195;185:1195",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "d1cda0cba54b4c80922e418ff5f87b18",
+                      "_parent": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "model": {
+                        "$ref": "97ea78d65b08465d833ae3d4d2e54ab8"
+                      },
+                      "hostEdge": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "a945f3fc01714345ac48ba327c9a007a",
+                      "_parent": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "model": {
+                        "$ref": "97ea78d65b08465d833ae3d4d2e54ab8"
+                      },
+                      "hostEdge": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "eed379c3c7fa4998ba99028c4768e54f",
+                      "_parent": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "model": {
+                        "$ref": "97ea78d65b08465d833ae3d4d2e54ab8"
+                      },
+                      "hostEdge": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "5d52e599f5b34ca49bccc92425d2b675",
+                      "_parent": {
+                        "$ref": "899165d59063477395c3886991560ef4"
+                      },
+                      "model": {
+                        "$ref": "97ea78d65b08465d833ae3d4d2e54ab8"
+                      },
+                      "left": 178,
+                      "top": 1195,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "d1cda0cba54b4c80922e418ff5f87b18"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "a945f3fc01714345ac48ba327c9a007a"
+                  },
+                  "propertyLabel": {
+                    "$ref": "eed379c3c7fa4998ba99028c4768e54f"
+                  },
+                  "activation": {
+                    "$ref": "5d52e599f5b34ca49bccc92425d2b675"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "c3f294fe0d9541a69206471c9e7668ba",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "dc0450b3e1ff44c084ec9684ec36f017"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:1290;1345:1290",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "0af9efe1cb8e40f58187f0e3f470fc23",
+                      "_parent": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "model": {
+                        "$ref": "dc0450b3e1ff44c084ec9684ec36f017"
+                      },
+                      "hostEdge": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/feed(id=1, next=true; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "734e1be401304e74a8939ca81386520e",
+                      "_parent": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "model": {
+                        "$ref": "dc0450b3e1ff44c084ec9684ec36f017"
+                      },
+                      "hostEdge": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/feed(id=1, next=true; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "52bacab6e9bc4e3b8930700de4731231",
+                      "_parent": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "model": {
+                        "$ref": "dc0450b3e1ff44c084ec9684ec36f017"
+                      },
+                      "hostEdge": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "GET /api/fuel_consumptions/feed(id=1, next=true; Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "406a124e320e46e4af3756dcffa0cc4b",
+                      "_parent": {
+                        "$ref": "c3f294fe0d9541a69206471c9e7668ba"
+                      },
+                      "model": {
+                        "$ref": "dc0450b3e1ff44c084ec9684ec36f017"
+                      },
+                      "left": 1338,
+                      "top": 1290,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "0af9efe1cb8e40f58187f0e3f470fc23"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "734e1be401304e74a8939ca81386520e"
+                  },
+                  "propertyLabel": {
+                    "$ref": "52bacab6e9bc4e3b8930700de4731231"
+                  },
+                  "activation": {
+                    "$ref": "406a124e320e46e4af3756dcffa0cc4b"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "eed738cfdff646419a454838eb39bbe7",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "bf2176fe925448e49bf35e03eea724bd"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:1385;185:1385",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "e3bb52fe77e249ad809ebea77bad194b",
+                      "_parent": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "model": {
+                        "$ref": "bf2176fe925448e49bf35e03eea724bd"
+                      },
+                      "hostEdge": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(id=2)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "8850ab4e63aa46188c7245e6ac8187a7",
+                      "_parent": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "model": {
+                        "$ref": "bf2176fe925448e49bf35e03eea724bd"
+                      },
+                      "hostEdge": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(id=2)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "9e9cb768e0ab40e4a41034ae8ef33028",
+                      "_parent": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "model": {
+                        "$ref": "bf2176fe925448e49bf35e03eea724bd"
+                      },
+                      "hostEdge": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(id=2)()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "2873237262aa46db979ca2fad40cceeb",
+                      "_parent": {
+                        "$ref": "eed738cfdff646419a454838eb39bbe7"
+                      },
+                      "model": {
+                        "$ref": "bf2176fe925448e49bf35e03eea724bd"
+                      },
+                      "left": 178,
+                      "top": 1385,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "e3bb52fe77e249ad809ebea77bad194b"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "8850ab4e63aa46188c7245e6ac8187a7"
+                  },
+                  "propertyLabel": {
+                    "$ref": "9e9cb768e0ab40e4a41034ae8ef33028"
+                  },
+                  "activation": {
+                    "$ref": "2873237262aa46db979ca2fad40cceeb"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "f2c1357fb4634afe917c9a95b99304fd",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "a8a056fa9eb44276b2ab8e5f65c84cdb"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "points": "185:1480;1345:1480",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "be7cd0eab76d4d0daa595f5930162173",
+                      "_parent": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "model": {
+                        "$ref": "a8a056fa9eb44276b2ab8e5f65c84cdb"
+                      },
+                      "hostEdge": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/fuel_consumptions/:id/likes(id=2, liked=1; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "681d7728084443aeb6404a60b8c736be",
+                      "_parent": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "model": {
+                        "$ref": "a8a056fa9eb44276b2ab8e5f65c84cdb"
+                      },
+                      "hostEdge": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/fuel_consumptions/:id/likes(id=2, liked=1; Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "6598b577976641028095f53caff83ed8",
+                      "_parent": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "model": {
+                        "$ref": "a8a056fa9eb44276b2ab8e5f65c84cdb"
+                      },
+                      "hostEdge": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/fuel_consumptions/:id/likes(id=2, liked=1; Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "516955a54d8941d0a606ea5253ee1d7c",
+                      "_parent": {
+                        "$ref": "f2c1357fb4634afe917c9a95b99304fd"
+                      },
+                      "model": {
+                        "$ref": "a8a056fa9eb44276b2ab8e5f65c84cdb"
+                      },
+                      "left": 1338,
+                      "top": 1480,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "be7cd0eab76d4d0daa595f5930162173"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "681d7728084443aeb6404a60b8c736be"
+                  },
+                  "propertyLabel": {
+                    "$ref": "6598b577976641028095f53caff83ed8"
+                  },
+                  "activation": {
+                    "$ref": "516955a54d8941d0a606ea5253ee1d7c"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "ad855ba8eeb94edfae8e93338d53d578",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "3c9955ea19394ace94f1d841fb152f6c"
+                  },
+                  "tail": {
+                    "$ref": "7526fd64e1f343238b1f21eaa5534943"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "1345:1575;185:1575",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "61791362d8554dc1a2a11072a0a31775",
+                      "_parent": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "model": {
+                        "$ref": "3c9955ea19394ace94f1d841fb152f6c"
+                      },
+                      "hostEdge": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(liked=1, likes_count)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "96bd8c1d7eec4d54b996bdf1e98a3281",
+                      "_parent": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "model": {
+                        "$ref": "3c9955ea19394ace94f1d841fb152f6c"
+                      },
+                      "hostEdge": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(liked=1, likes_count)()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "fc75909ab8c243aaa3669b2db4876b68",
+                      "_parent": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "model": {
+                        "$ref": "3c9955ea19394ace94f1d841fb152f6c"
+                      },
+                      "hostEdge": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: CarDTO(liked=1, likes_count)()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "7f305f5df7be40b689fa452603e5165a",
+                      "_parent": {
+                        "$ref": "ad855ba8eeb94edfae8e93338d53d578"
+                      },
+                      "model": {
+                        "$ref": "3c9955ea19394ace94f1d841fb152f6c"
+                      },
+                      "left": 178,
+                      "top": 1575,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "61791362d8554dc1a2a11072a0a31775"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "96bd8c1d7eec4d54b996bdf1e98a3281"
+                  },
+                  "propertyLabel": {
+                    "$ref": "fc75909ab8c243aaa3669b2db4876b68"
+                  },
+                  "activation": {
+                    "$ref": "7f305f5df7be40b689fa452603e5165a"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "aa4baa6d0c9b40fd9106de10126adcac",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "e85d59ffe5414c2f8151fcc590f3ab67"
+                  },
+                  "tail": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "head": {
+                    "$ref": "0c6fde0f987c435b9ffe51a0dc3902b6"
+                  },
+                  "points": "185:1670;755:1670",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "ab532a5806f74c39a8289698490edeb3",
+                      "_parent": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "model": {
+                        "$ref": "e85d59ffe5414c2f8151fcc590f3ab67"
+                      },
+                      "hostEdge": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/users/logout(Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "00f98ce042f648e2a9d6d60093e1f499",
+                      "_parent": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "model": {
+                        "$ref": "e85d59ffe5414c2f8151fcc590f3ab67"
+                      },
+                      "hostEdge": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/users/logout(Bearer JWT)"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "46754be483ca4334ac938d6973a7d895",
+                      "_parent": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "model": {
+                        "$ref": "e85d59ffe5414c2f8151fcc590f3ab67"
+                      },
+                      "hostEdge": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "POST /api/users/logout(Bearer JWT)"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "91aa2cf387a64a81ab390ae42b292b34",
+                      "_parent": {
+                        "$ref": "aa4baa6d0c9b40fd9106de10126adcac"
+                      },
+                      "model": {
+                        "$ref": "e85d59ffe5414c2f8151fcc590f3ab67"
+                      },
+                      "left": 748,
+                      "top": 1670,
+                      "width": 14,
+                      "height": 35,
+                      "visible": true
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "ab532a5806f74c39a8289698490edeb3"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "00f98ce042f648e2a9d6d60093e1f499"
+                  },
+                  "propertyLabel": {
+                    "$ref": "46754be483ca4334ac938d6973a7d895"
+                  },
+                  "activation": {
+                    "$ref": "91aa2cf387a64a81ab390ae42b292b34"
+                  }
+                },
+                {
+                  "_type": "UMLSeqMessageView",
+                  "_id": "f695b3b888134a2eb54acc65d6035366",
+                  "_parent": {
+                    "$ref": "f7a98e991155490b8681892d56821041"
+                  },
+                  "model": {
+                    "$ref": "073a294962e740dabb4acc98dfb208dc"
+                  },
+                  "tail": {
+                    "$ref": "0c6fde0f987c435b9ffe51a0dc3902b6"
+                  },
+                  "head": {
+                    "$ref": "000353e12cfc4410b8fbe30b21883ec7"
+                  },
+                  "points": "755:1765;185:1765",
+                  "lineStyle": 1,
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "f18ada29a3554a0f9e9ccaceea74d751",
+                      "_parent": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "model": {
+                        "$ref": "073a294962e740dabb4acc98dfb208dc"
+                      },
+                      "hostEdge": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "edgePosition": 0,
+                      "distance": 12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: JWT отозван()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "c0bf74bc346a47aabcb095e2d95411bb",
+                      "_parent": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "model": {
+                        "$ref": "073a294962e740dabb4acc98dfb208dc"
+                      },
+                      "hostEdge": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "edgePosition": 0,
+                      "distance": 25,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: JWT отозван()"
+                    },
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "d6f3054976e04888858cb3da5c780958",
+                      "_parent": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "model": {
+                        "$ref": "073a294962e740dabb4acc98dfb208dc"
+                      },
+                      "hostEdge": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "edgePosition": 0,
+                      "distance": -12,
+                      "alpha": 1.57,
+                      "font": "Arial;13;0",
+                      "text": "200: JWT отозван()"
+                    },
+                    {
+                      "_type": "UMLActivationView",
+                      "_id": "586409634ba1462f9a18b636a4413798",
+                      "_parent": {
+                        "$ref": "f695b3b888134a2eb54acc65d6035366"
+                      },
+                      "model": {
+                        "$ref": "073a294962e740dabb4acc98dfb208dc"
+                      },
+                      "left": 178,
+                      "top": 1765,
+                      "width": 14,
+                      "height": 35,
+                      "visible": false
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "nameLabel": {
+                    "$ref": "f18ada29a3554a0f9e9ccaceea74d751"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "c0bf74bc346a47aabcb095e2d95411bb"
+                  },
+                  "propertyLabel": {
+                    "$ref": "d6f3054976e04888858cb3da5c780958"
+                  },
+                  "activation": {
+                    "$ref": "586409634ba1462f9a18b636a4413798"
+                  }
+                }
+              ],
+              "showSequenceNumber": true,
+              "showSignature": true,
+              "showArguments": true
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "4a9b9cbf73b24a3781e458a56cf7e94a",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "Клиент",
+              "type": ""
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "55a0abbf750a421dbec2869739166936",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "Домен users",
+              "type": {
+                "$ref": "4392632571c84b9fb761a90a5c187d6b"
+              }
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "6cb2d86908be422692b743c54e6f0dda",
+              "_parent": {
+                "$ref": "9d1c3d0c8a9a46588175728e9f12bd79"
+              },
+              "name": "Домен fuel_consumptions",
+              "type": {
+                "$ref": "12cd15d585844a889f605379242a3cd7"
+              }
+            }
+          ]
         }
       ]
     },
